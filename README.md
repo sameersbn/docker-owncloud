@@ -9,7 +9,7 @@ Before we get into the nitty-gritties, lets take care of a few questions you may
 
 Yes
 
-*Should I use it in production?*
+*Can I use it in production?*
 
 Not at this time. Only use it if you want to provide feedback or if you want to contribute or understand how all of this works together and then maybe use this information while building your own containers.
 
@@ -17,6 +17,7 @@ Not at this time. Only use it if you want to provide feedback or if you want to 
 
 - You *cannot* install external plugins
 - SSL support is not enabled, you need to do it manually and on your own
+- File upload size is limited to `2G`
 
 Now lets get started. We start by creating data-only containers to isolate data from the various containers as much as we can so that we only expose as much as we need to.
 
