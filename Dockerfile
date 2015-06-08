@@ -1,10 +1,10 @@
 FROM sameersbn/php5-fpm:latest
 MAINTAINER sameer@damagehead.com
 
-ENV OWNCLOUD_VERSION 8.0.0
-ENV OWNCLOUD_USER www-data
-ENV OWNCLOUD_INSTALL_DIR /var/www/owncloud
-ENV OWNCLOUD_DATA_DIR /data
+ENV OWNCLOUD_VERSION=8.0.0 \
+    OWNCLOUD_USER=www-data \
+    OWNCLOUD_INSTALL_DIR=/var/www/owncloud \
+    OWNCLOUD_DATA_DIR=/data
 
 COPY install.sh /install.sh
 RUN chmod 755 /install.sh
