@@ -1,0 +1,54 @@
+phpSocket:
+  image: busybox
+  volumes:
+    - /srv/docker/owncloud/php5-fpm:/var/run/php5-fpm
+  command: tail -f /dev/null
+
+nginxSites:
+  image: busybox
+  volumes:
+    - /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled
+  command: tail -f /dev/null
+
+owncloudData:
+  image: busybox
+  volumes:
+    - /srv/docker/owncloud/owncloud:/data
+  command: tail -f /dev/null
+
+postgresql:
+  image: sameersbn/postgresql:latest
+  environment:
+    - DB_USER=owncloud
+    - DB_PASS=password
+    - DB_NAME=owncloud_db
+  volumes:
+    - /srv/docker/owncloud/postgresql:/var/lib/postgresql
+
+owncloud:
+  image: sameersbn/owncloud:latest
+  environment:
+    - OWNCLOUD_FQDN=cloud.example.com
+  links:
+    - postgresql:postgresql
+  volumes_from:
+    - owncloudData
+    - nginxSites
+  command: tail -f /dev/null
+
+phpFpm:
+  image: sameersbn/php5-fpm:latest
+  links:
+    - postgresql:postgresql
+  volumes_from:
+    - phpSocket
+    - owncloud
+
+nginx:
+  image: sameersbn/nginx
+  volumes_from:
+    - phpSocket
+    - nginxSites
+    - owncloud
+  ports:
+    - "80:80"
