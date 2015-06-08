@@ -19,4 +19,4 @@ VOLUME ["${OWNCLOUD_INSTALL_DIR}"]
 VOLUME ["${OWNCLOUD_DATA_DIR}"]
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["echo", "Data-only container with ownCloud application source"]
+CMD ["/usr/sbin/php5-fpm"]
