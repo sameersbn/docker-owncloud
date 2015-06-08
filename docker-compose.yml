@@ -1,19 +1,7 @@
-phpSocket:
-  image: busybox
-  volumes:
-    - /srv/docker/owncloud/php5-fpm:/var/run/php5-fpm
-  command: tail -f /dev/null
-
 nginxSites:
   image: busybox
   volumes:
     - /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled
-  command: tail -f /dev/null
-
-owncloudData:
-  image: busybox
-  volumes:
-    - /srv/docker/owncloud/owncloud:/data
   command: tail -f /dev/null
 
 postgresql:
@@ -31,23 +19,14 @@ owncloud:
     - OWNCLOUD_FQDN=cloud.example.com
   links:
     - postgresql:postgresql
+  volumes:
+    - /srv/docker/owncloud/owncloud:/data
   volumes_from:
-    - owncloudData
     - nginxSites
-  command: tail -f /dev/null
-
-phpFpm:
-  image: sameersbn/php5-fpm:latest
-  links:
-    - postgresql:postgresql
-  volumes_from:
-    - phpSocket
-    - owncloud
 
 nginx:
   image: sameersbn/nginx
   volumes_from:
-    - phpSocket
     - nginxSites
     - owncloud
   ports:
