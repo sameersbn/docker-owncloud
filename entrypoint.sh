@@ -10,7 +10,7 @@ ln -sf ${OWNCLOUD_DATA_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
 
 # create VERSION file, not used at the moment but might be required in the future
 CURRENT_VERSION=
-[ -f ${OWNCLOUD_DATA_DIR}/VERSION ] && CURRENT_VERSION=$(cat -f ${OWNCLOUD_DATA_DIR}/VERSION)
+[ -f ${OWNCLOUD_DATA_DIR}/VERSION ] && CURRENT_VERSION=$(cat ${OWNCLOUD_DATA_DIR}/VERSION)
 [ "${OWNCLOUD_VERSION}" != "${CURRENT_VERSION}" ] && echo -n "${OWNCLOUD_VERSION}" > ${OWNCLOUD_DATA_DIR}/VERSION
 
 # install nginx configuration, if not exists
