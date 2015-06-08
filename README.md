@@ -82,7 +82,7 @@ docker run -d --name=nginx \
 
 Will create a `nginx` container and listen on host port `80`. If port `80` is already in use, then you can change the host port in the above command. The owncloud virtual host configuration will already be available in the `nginxSites` volume as it will be installed by the `owncloud` container in the previous commands. The `owncloud` volume import will make the owncloud source available to the nginx container, thereby allowing it to handle requests to static site assets. This `nginx` container can be used for hosting other applications or act as a load balancer and can be treated as a generic `nginx` container just like the `postgresql` container.
 
-All of the above setup can be achived using `docker-compose.yml` file present in this repository. Make sure you update the `OWNCLOUD_FQDN` in the `docker-compose.yml` file before starting it up
+All of the above setup can be achived using `docker-compose-dedicated-workers.yml` file present in this repository. Make sure you update the `OWNCLOUD_FQDN` in the `docker-compose-dedicated-workers.yml` file before starting it up
 
 The `postgresql`, and `nginx` containers are not specific to the owncloud installation and can be re-used with other applications as well.
 
