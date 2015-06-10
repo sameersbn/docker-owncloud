@@ -43,7 +43,7 @@ Now lets get started. We start by creating data-only containers to isolate data 
 docker run -d --name=nginxSites \
   --volume /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled \
   busybox:latest \
-    echo "Data-only container for nginx sites configuration"
+  echo "Data-only container for nginx sites configuration"
 ```
 
 Will create a data-only container for nginx site configurations. The owncloud container will automatically install a vhost configuration for accessing owncloud at this volume.
@@ -97,7 +97,7 @@ We start by creating data-only containers to isolate data from the various conta
 docker run -d --name=phpSocket \
   --volume /srv/docker/owncloud/php5-fpm:/var/run/php5-fpm \
   busybox:latest \
-    echo "Data-only container for php5-fpm socket"
+  echo "Data-only container for php5-fpm socket"
 ```
 
 Will create a data-only container for the php-fpm socket. This will later be used by the nginx container to proxy connections to the php-fpm container.
@@ -107,7 +107,7 @@ Will create a data-only container for the php-fpm socket. This will later be use
 docker run -d --name=nginxSites \
   --volume /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled \
   busybox:latest \
-    echo "Data-only container for nginx sites configuration"
+  echo "Data-only container for nginx sites configuration"
 ```
 
 Will create a data-only container for nginx site configurations. The owncloud container will automatically install a vhost configuration for accessing owncloud at this volume.
@@ -117,7 +117,7 @@ Will create a data-only container for nginx site configurations. The owncloud co
 docker run -d --name=owncloudData \
   --volume /srv/docker/owncloud/owncloud:/data \
   busybox:latest \
-    echo "Data-only container for ownCloud data"
+  echo "Data-only container for ownCloud data"
 ```
 
 Will create a data-only container for owncloud data.
@@ -141,7 +141,7 @@ docker run -d --name=owncloud \
   --volumes-from owncloudData \
   --volumes-from nginxSites \
   sameersbn/owncloud:latest \
-    echo "Data-only container with owncloud source"
+  echo "Data-only container with owncloud source"
 ```
 
 Will create the owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx via the `nginxSites` volume import. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `ownCloud` already exists it will not be overwritten. Here the `postgresql` link and the `owncloudData` volume import options are not really required as we cannot automatically configure owncloud using the `postgresql` link.
