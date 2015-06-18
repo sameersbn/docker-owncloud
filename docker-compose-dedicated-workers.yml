@@ -26,6 +26,8 @@ owncloud:
 
 nginx:
   image: sameersbn/nginx
+  links:
+    - owncloud:php-fpm
   volumes_from:
     - nginxSites
     - owncloud

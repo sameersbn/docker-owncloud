@@ -75,6 +75,7 @@ Will create the owncloud container exposing the owncloud source. The container w
 # create nginx container
 docker run -d --name=nginx \
   --publish 80:80 \
+  --link owncloud:php-fpm \
   --volumes-from nginxSites \
   --volumes-from owncloud \
   sameersbn/nginx:latest
@@ -91,16 +92,6 @@ The `postgresql`, and `nginx` containers are not specific to the owncloud instal
 In this mode, we start a separate php-fpm container that is not specific to use by the owncloud container. This php-fpm container can be shared use with by other php applications as well.
 
 We start by creating data-only containers to isolate data from the various containers as much as we can so that we only expose as much as we need to.
-
-```bash
-# create data-only container for php-fpm socket
-docker run -d --name=phpSocket \
-  --volume /srv/docker/owncloud/php5-fpm:/var/run/php5-fpm \
-  busybox:latest \
-  echo "Data-only container for php5-fpm socket"
-```
-
-Will create a data-only container for the php-fpm socket. This will later be used by the nginx container to proxy connections to the php-fpm container.
 
 ```bash
 # create data-only container for nginx sites configuration
@@ -150,24 +141,23 @@ Will create the owncloud container exposing the owncloud source. The container w
 # create php-fpm container
 docker run -d --name=phpFpm \
   --link postgresql:postgresql \
-  --volumes-from phpSocket \
   --volumes-from owncloud \
   sameersbn/php5-fpm:latest
 ```
 
-Will create a `php-fpm` container for use with owncloud. As with the case of the `postgresql` container, it can be used as a regular `php-fpm` server for other applications if desired. The link to `postgresql` allows us to use the hostname `postgresql` while specifying the database connection parameters in the owncloud setup. The `php-fpm` unix domain socket will be created and available at the `phpSocket` volume import. The `owncloud` volume import makes the owncloud source available to the `phpFpm` container.
+Will create a `php-fpm` container for use with owncloud. As with the case of the `postgresql` container, it can be used as a regular `php-fpm` server for other applications if desired. The link to `postgresql` allows us to use the hostname `postgresql` while specifying the database connection parameters in the owncloud setup. The `owncloud` volume import makes the owncloud source available to the `phpFpm` container.
 
 ```bash
 # create nginx container
 docker run -d --name=nginx \
   --publish 80:80 \
-  --volumes-from phpSocket \
+  --link phpFpm:php-fpm \
   --volumes-from nginxSites \
   --volumes-from owncloud \
   sameersbn/nginx:latest
 ```
 
-Will create a `nginx` container and listen on host port `80`. If port `80` is already in use, then you can change the host port in the above command. The owncloud virtual host configuration will already be available in the `nginxSites` volume as it will be installed by the `owncloud` container in the previous commands. The `phpSocket` volume import will allow nginx to talk to the `phpFpm` container via the `php-fpm` unix domain socket. The `owncloud` volume import will make the owncloud source available to the nginx container, thereby allowing it to handle requests to static site assets. The `nginx` container can be used for hosting other applications or act as a load balancer and can be treated as a generic `nginx` container just like the `postgresql` and `php-fpm` containers.
+Will create a `nginx` container and listen on host port `80`. If port `80` is already in use, then you can change the host port in the above command. The owncloud virtual host configuration will already be available in the `nginxSites` volume as it will be installed by the `owncloud` container in the previous commands. The `php-fpm` link alias will allow the nginx container to address the `phpFpm` container using the `php-fpm` hostname. The `owncloud` volume import will make the owncloud source available to the nginx container, thereby allowing it to handle requests to static site assets. The `nginx` container can be used for hosting other applications or act as a load balancer and can be treated as a generic `nginx` container just like the `postgresql` and `php-fpm` containers.
 
 All of the above setup can be achived using `docker-compose-shared-workers.yml` file present in this repository. Make sure you update the `OWNCLOUD_FQDN` in the `docker-compose-shared-workers.yml` file before starting it up
 

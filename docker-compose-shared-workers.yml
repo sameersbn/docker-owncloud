@@ -1,9 +1,3 @@
-phpSocket:
-  image: busybox
-  volumes:
-    - /srv/docker/owncloud/php5-fpm:/var/run/php5-fpm
-  command: tail -f /dev/null
-
 nginxSites:
   image: busybox
   volumes:
@@ -41,13 +35,13 @@ phpFpm:
   links:
     - postgresql:postgresql
   volumes_from:
-    - phpSocket
     - owncloud
 
 nginx:
   image: sameersbn/nginx
+  links:
+    - phpFpm:php-fpm
   volumes_from:
-    - phpSocket
     - nginxSites
     - owncloud
   ports:
