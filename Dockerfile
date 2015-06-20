@@ -15,8 +15,7 @@ RUN apt-get update \
 
 COPY conf /conf
 COPY install.sh /tmp/install.sh
-RUN chmod 755 /tmp/install.sh
-RUN /tmp/install.sh
+RUN bash /tmp/install.sh
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
