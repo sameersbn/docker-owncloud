@@ -6,6 +6,12 @@ ENV OWNCLOUD_VERSION=8.0.0 \
     OWNCLOUD_INSTALL_DIR=/var/www/owncloud \
     OWNCLOUD_DATA_DIR=/data
 
+RUN apt-get update \
+ && apt-get install -y php5-pgsql php5-mysql php5-gd php-file \
+      php5-curl php5-intl php5-mcrypt php5-ldap \
+      php-net-ftp php5-gmp php5-apcu php5-imagick \
+ && rm -rf /var/lib/apt/lists/*
+
 COPY install.sh /install.sh
 RUN chmod 755 /install.sh
 RUN /install.sh
