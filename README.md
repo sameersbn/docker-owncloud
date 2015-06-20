@@ -69,7 +69,7 @@ docker run -d --name=owncloud \
   sameersbn/owncloud:latest
 ```
 
-Will create the owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx via the `nginxSites` volume import. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `ownCloud` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/var/lib/owncloud`.
+Will create the owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx via the `nginxSites` volume import. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `${OWNCLOUD_FQDN}.conf` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/var/lib/owncloud`.
 
 ```bash
 # create nginx container
@@ -125,7 +125,7 @@ docker run -d --name=owncloud \
   echo "Data-only container with owncloud source"
 ```
 
-Will create a data-only owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx via the `nginxSites` volume import. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `ownCloud` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/var/lib/owncloud`.
+Will create a data-only owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx via the `nginxSites` volume import. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `${OWNCLOUD_FQDN}.conf` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/var/lib/owncloud`.
 
 ```bash
 # create php-fpm container
