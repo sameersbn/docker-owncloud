@@ -13,10 +13,10 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 
-COPY conf /conf
 COPY install.sh /tmp/install.sh
 RUN bash /tmp/install.sh
 
+COPY conf /conf
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 
