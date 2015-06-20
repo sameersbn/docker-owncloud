@@ -14,9 +14,9 @@ CURRENT_VERSION=
 [ "${OWNCLOUD_VERSION}" != "${CURRENT_VERSION}" ] && echo -n "${OWNCLOUD_VERSION}" > ${OWNCLOUD_DATA_DIR}/VERSION
 
 # install nginx configuration, if not exists
-if [ -d /etc/nginx/sites-enabled -a ! -f /etc/nginx/sites-enabled/ownCloud ]; then
-  cp /conf/nginx/ownCloud /etc/nginx/sites-enabled/ownCloud
-  sed -i 's/{{OWNCLOUD_FQDN}}/'"${OWNCLOUD_FQDN}"'/' /etc/nginx/sites-enabled/ownCloud
+if [ -d /etc/nginx/sites-enabled -a ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]; then
+  cp /conf/nginx/ownCloud /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
+  sed -i 's/{{OWNCLOUD_FQDN}}/'"${OWNCLOUD_FQDN}"'/' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
 fi
 
 exec $@
