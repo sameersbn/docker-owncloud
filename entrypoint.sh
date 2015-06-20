@@ -3,10 +3,16 @@ set -e
 
 OWNCLOUD_FQDN=${OWNCLOUD_FQDN:-localhost}
 
-# fix ownership and create required links
+# create the data and conf directories
+mkdir -p ${OWNCLOUD_DATA_DIR}/data
+mkdir -p ${OWNCLOUD_DATA_DIR}/conf
+
+# create symlinks
+ln -sf ${OWNCLOUD_DATA_DIR}/data ${OWNCLOUD_INSTALL_DIR}/data
+ln -sf ${OWNCLOUD_DATA_DIR}/conf/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
+
+# fix ownership of the OWNCLOUD_DATA_DIR
 chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_DATA_DIR}/
-ln -sf ${OWNCLOUD_DATA_DIR} ${OWNCLOUD_INSTALL_DIR}/data
-ln -sf ${OWNCLOUD_DATA_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
 
 # create VERSION file, not used at the moment but might be required in the future
 CURRENT_VERSION=
