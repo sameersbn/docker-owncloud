@@ -12,11 +12,11 @@ RUN apt-get update \
       php-net-ftp php5-gmp php5-apcu php5-imagick \
  && rm -rf /var/lib/apt/lists/*
 
-COPY install.sh /install.sh
-RUN chmod 755 /install.sh
-RUN /install.sh
 
 COPY conf /conf
+COPY install.sh /tmp/install.sh
+RUN chmod 755 /tmp/install.sh
+RUN /tmp/install.sh
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
