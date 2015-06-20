@@ -9,7 +9,7 @@ cat > ${OWNCLOUD_INSTALL_DIR}/.user.ini <<EOF
 default_charset='UTF-8'
 output_buffering=off
 upload_max_filesize=2048M
-post_max_size=2048G
+post_max_size=2048M
 EOF
 
 echo "Setting strong directory permissions..."
