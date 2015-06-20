@@ -17,11 +17,11 @@ COPY conf /conf
 COPY install.sh /tmp/install.sh
 RUN bash /tmp/install.sh
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod 755 /entrypoint.sh
+COPY entrypoint.sh /sbin/entrypoint.sh
+RUN chmod 755 /sbin/entrypoint.sh
 
 VOLUME ["${OWNCLOUD_INSTALL_DIR}", "${OWNCLOUD_DATA_DIR}"]
 
 WORKDIR ${OWNCLOUD_INSTALL_DIR}
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/sbin/entrypoint.sh"]
 CMD ["/usr/sbin/php5-fpm"]
