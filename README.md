@@ -64,12 +64,12 @@ Will create a postgresql container and a user and schema for the owncloud instal
 docker run -d --name=owncloud \
   --env OWNCLOUD_FQDN=cloud.example.com \
   --link postgresql:postgresql \
-  --volume /srv/docker/owncloud/owncloud:/data \
+  --volume /srv/docker/owncloud/owncloud:/var/lib/owncloud \
   --volumes-from nginxSites \
   sameersbn/owncloud:latest
 ```
 
-Will create the owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx via the `nginxSites` volume import. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `ownCloud` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/data`.
+Will create the owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx via the `nginxSites` volume import. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `ownCloud` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/var/lib/owncloud`.
 
 ```bash
 # create nginx container
@@ -119,13 +119,13 @@ Will create a postgresql container and a user and schema for the owncloud instal
 docker run -d --name=owncloud \
   --env OWNCLOUD_FQDN=cloud.example.com \
   --link postgresql:postgresql \
-  --volume /srv/docker/owncloud/owncloud:/data
+  --volume /srv/docker/owncloud/owncloud:/var/lib/owncloud
   --volumes-from nginxSites \
   sameersbn/owncloud:latest \
   echo "Data-only container with owncloud source"
 ```
 
-Will create a data-only owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx via the `nginxSites` volume import. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `ownCloud` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/data`.
+Will create a data-only owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx via the `nginxSites` volume import. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `ownCloud` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/var/lib/owncloud`.
 
 ```bash
 # create php-fpm container

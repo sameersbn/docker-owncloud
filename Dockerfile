@@ -4,7 +4,7 @@ MAINTAINER sameer@damagehead.com
 ENV OWNCLOUD_VERSION=8.0.0 \
     OWNCLOUD_USER=${PHP_FPM_USER} \
     OWNCLOUD_INSTALL_DIR=/var/www/owncloud \
-    OWNCLOUD_DATA_DIR=/data
+    OWNCLOUD_DATA_DIR=/var/lib/owncloud
 
 RUN apt-get update \
  && apt-get install -y php5-pgsql php5-mysql php5-gd php-file \

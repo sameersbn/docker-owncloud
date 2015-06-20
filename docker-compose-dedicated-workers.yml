@@ -20,7 +20,7 @@ owncloud:
   links:
     - postgresql:postgresql
   volumes:
-    - /srv/docker/owncloud/owncloud:/data
+    - /srv/docker/owncloud/owncloud:/var/lib/owncloud
   volumes_from:
     - nginxSites
 
