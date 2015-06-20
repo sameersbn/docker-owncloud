@@ -4,12 +4,6 @@ nginxSites:
     - /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled
   command: tail -f /dev/null
 
-owncloudData:
-  image: busybox
-  volumes:
-    - /srv/docker/owncloud/owncloud:/data
-  command: tail -f /dev/null
-
 postgresql:
   image: sameersbn/postgresql:latest
   environment:
@@ -25,8 +19,9 @@ owncloud:
     - OWNCLOUD_FQDN=cloud.example.com
   links:
     - postgresql:postgresql
+  volumes:
+    - /srv/docker/owncloud/owncloud:/data
   volumes_from:
-    - owncloudData
     - nginxSites
   command: tail -f /dev/null
 

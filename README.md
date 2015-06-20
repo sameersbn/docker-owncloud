@@ -104,16 +104,6 @@ docker run -d --name=nginxSites \
 Will create a data-only container for nginx site configurations. The owncloud container will automatically install a vhost configuration for accessing owncloud at this volume.
 
 ```bash
-# create data-only container for ownCloud data
-docker run -d --name=owncloudData \
-  --volume /srv/docker/owncloud/owncloud:/data \
-  busybox:latest \
-  echo "Data-only container for ownCloud data"
-```
-
-Will create a data-only container for owncloud data.
-
-```bash
 # create postgresql container
 docker run -d --name=postgresql \
   --env 'DB_USER=owncloud' \
@@ -129,13 +119,13 @@ Will create a postgresql container and a user and schema for the owncloud instal
 docker run -d --name=owncloud \
   --env OWNCLOUD_FQDN=cloud.example.com \
   --link postgresql:postgresql \
-  --volumes-from owncloudData \
+  --volume /srv/docker/owncloud/owncloud:/data
   --volumes-from nginxSites \
   sameersbn/owncloud:latest \
   echo "Data-only container with owncloud source"
 ```
 
-Will create the owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx via the `nginxSites` volume import. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `ownCloud` already exists it will not be overwritten. Here the `postgresql` link and the `owncloudData` volume import options are not really required as we cannot automatically configure owncloud using the `postgresql` link.
+Will create a data-only owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx via the `nginxSites` volume import. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `ownCloud` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/data`.
 
 ```bash
 # create php-fpm container
