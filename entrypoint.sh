@@ -21,7 +21,7 @@ CURRENT_VERSION=
 
 # install nginx configuration, if not exists
 if [ -d /etc/nginx/sites-enabled -a ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]; then
-  cp /conf/nginx/ownCloud /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
+  cp /conf/nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
   sed -i 's/{{OWNCLOUD_FQDN}}/'"${OWNCLOUD_FQDN}"'/' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
 fi
 
