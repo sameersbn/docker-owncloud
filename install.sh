@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e
 
-echo "Downloading OwnCloud ${OWNCLOUD_VERSION}..."
 mkdir -p ${OWNCLOUD_INSTALL_DIR}
+
+echo "Downloading OwnCloud ${OWNCLOUD_VERSION}..."
 wget "https://download.owncloud.org/community/owncloud-${OWNCLOUD_VERSION}.tar.bz2" -O /tmp/owncloud-${OWNCLOUD_VERSION}.tar.bz2
+echo "Extracting OwnCloud ${OWNCLOUD_VERSION}..."
 tar -xf /tmp/owncloud-${OWNCLOUD_VERSION}.tar.bz2 --strip=1 -C ${OWNCLOUD_INSTALL_DIR}
 rm -rf /tmp/owncloud-${OWNCLOUD_VERSION}.tar.bz2
 
