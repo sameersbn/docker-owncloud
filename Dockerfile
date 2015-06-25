@@ -12,8 +12,8 @@ RUN apt-get update \
       php-net-ftp php5-gmp php5-apcu php5-imagick \
  && rm -rf /var/lib/apt/lists/*
 
-COPY install.sh /tmp/install.sh
-RUN bash /tmp/install.sh
+COPY install.sh /var/cache/owncloud/install.sh
+RUN bash /var/cache/owncloud/install.sh
 
 COPY conf /conf
 COPY entrypoint.sh /sbin/entrypoint.sh
