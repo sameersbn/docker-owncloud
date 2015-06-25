@@ -3,7 +3,9 @@ set -e
 
 echo "Downloading OwnCloud ${OWNCLOUD_VERSION}..."
 mkdir -p ${OWNCLOUD_INSTALL_DIR}
-wget -nv "https://download.owncloud.org/community/owncloud-${OWNCLOUD_VERSION}.tar.bz2" -O - | tar -jxf - --strip=1 -C ${OWNCLOUD_INSTALL_DIR}
+wget "https://download.owncloud.org/community/owncloud-${OWNCLOUD_VERSION}.tar.bz2" -O /tmp/owncloud-${OWNCLOUD_VERSION}.tar.bz2
+tar -xf /tmp/owncloud-${OWNCLOUD_VERSION}.tar.bz2 --strip=1 -C ${OWNCLOUD_INSTALL_DIR}
+rm -rf /tmp/owncloud-${OWNCLOUD_VERSION}.tar.bz2
 
 cat > ${OWNCLOUD_INSTALL_DIR}/.user.ini <<EOF
 default_charset='UTF-8'
