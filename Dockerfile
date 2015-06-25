@@ -12,7 +12,6 @@ RUN apt-get update \
       php-net-ftp php5-gmp php5-apcu php5-imagick \
  && rm -rf /var/lib/apt/lists/*
 
-
 COPY install.sh /tmp/install.sh
 RUN bash /tmp/install.sh
 
