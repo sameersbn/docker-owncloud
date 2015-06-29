@@ -10,6 +10,7 @@ RUN apt-get update \
  && apt-get install -y php5-pgsql php5-mysql php5-gd php-file \
       php5-curl php5-intl php5-mcrypt php5-ldap \
       php-net-ftp php5-gmp php5-apcu php5-imagick \
+ && php5enmod mcrypt \
  && rm -rf /var/lib/apt/lists/*
 
 COPY install.sh /var/cache/owncloud/install.sh
