@@ -35,7 +35,7 @@ phpFpm:
 nginx:
   image: sameersbn/nginx
   links:
-    - phpFpm:php-fpm
+    - phpFpm:owncloud-php-fpm
   volumes_from:
     - nginxSites
     - owncloud
