@@ -77,15 +77,15 @@ case ${DB_TYPE} in
     ;;
 esac
 
-# create the data and conf directories
-mkdir -p ${OWNCLOUD_DATA_DIR}/data
-mkdir -p ${OWNCLOUD_DATA_DIR}/conf
-
-# create symlinks
-ln -sf ${OWNCLOUD_DATA_DIR}/conf/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
-
 # fix ownership of the OWNCLOUD_DATA_DIR
 chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_DATA_DIR}/
+
+# create the data and conf directories
+sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_DATA_DIR}/data
+sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_DATA_DIR}/conf
+
+# create symlinks to config.php
+sudo -HEu ${OWNCLOUD_USER}  ln -sf ${OWNCLOUD_DATA_DIR}/conf/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
 
 if [ ! -f ${OWNCLOUD_DATA_DIR}/conf/config.php ]; then
   # copy configuration template
@@ -106,7 +106,7 @@ fi
 # create VERSION file, not used at the moment but might be required in the future
 CURRENT_VERSION=
 [ -f ${OWNCLOUD_DATA_DIR}/VERSION ] && CURRENT_VERSION=$(cat ${OWNCLOUD_DATA_DIR}/VERSION)
-[ "${OWNCLOUD_VERSION}" != "${CURRENT_VERSION}" ] && echo -n "${OWNCLOUD_VERSION}" > ${OWNCLOUD_DATA_DIR}/VERSION
+[ "${OWNCLOUD_VERSION}" != "${CURRENT_VERSION}" ] && echo -n "${OWNCLOUD_VERSION}" | sudo -HEu ${OWNCLOUD_USER} tee ${OWNCLOUD_DATA_DIR}/VERSION >/dev/null
 
 # install nginx configuration, if not exists
 if [ -d /etc/nginx/sites-enabled -a ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]; then
