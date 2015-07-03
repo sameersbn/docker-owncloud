@@ -84,9 +84,6 @@ chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_DATA_DIR}/
 sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_OCDATA_DIR}
 sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_CONF_DIR}
 
-# create symlinks to config.php
-sudo -HEu ${OWNCLOUD_USER}  ln -sf ${OWNCLOUD_CONF_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
-
 if [ ! -f ${OWNCLOUD_CONF_DIR}/config.php ]; then
   # copy configuration template
   sudo -HEu ${OWNCLOUD_USER} cp /var/cache/owncloud/conf/owncloud/autoconfig.php ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php

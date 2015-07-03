@@ -9,6 +9,9 @@ echo "Extracting OwnCloud ${OWNCLOUD_VERSION}..."
 tar -xf /tmp/owncloud-${OWNCLOUD_VERSION}.tar.bz2 --strip=1 -C ${OWNCLOUD_INSTALL_DIR}
 rm -rf /tmp/owncloud-${OWNCLOUD_VERSION}.tar.bz2
 
+# create symlink to config.php
+ln -sf ${OWNCLOUD_CONF_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
+
 cat > ${OWNCLOUD_INSTALL_DIR}/.user.ini <<EOF
 default_charset='UTF-8'
 output_buffering=off
