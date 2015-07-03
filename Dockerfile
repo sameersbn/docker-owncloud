@@ -6,6 +6,9 @@ ENV OWNCLOUD_VERSION=8.0.0 \
     OWNCLOUD_INSTALL_DIR=/var/www/owncloud \
     OWNCLOUD_DATA_DIR=/var/lib/owncloud
 
+ENV OWNCLOUD_CONF_DIR=${OWNCLOUD_DATA_DIR}/conf \
+    OWNCLOUD_OCDATA_DIR=${OWNCLOUD_DATA_DIR}/ocdata
+
 RUN apt-get update \
  && apt-get install -y php5-pgsql php5-mysql php5-gd php-file \
       php5-curl php5-intl php5-mcrypt php5-ldap \
