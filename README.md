@@ -151,9 +151,9 @@ Will create a `nginx` container and listen on host port `80`. If port `80` is al
 
 All of the above setup can be achived using `docker-compose-shared-workers.yml` file present in this repository. Make sure you update the `OWNCLOUD_FQDN` in the `docker-compose-shared-workers.yml` file before starting it up
 
-# Final Steps
+# Final Step
 
-Once all the containers have been started, access your owncloud installation at `http://localhost` or `http://owncloud.example.com`. On first run, owncloud will ask you to create an admin user and specify the database connection parameters. Here select `Postgresql` and specify the hostname as `postgresql` and enter the details as specified in the command to start the `postgresql` container above. And you are done.
+Once all the containers have been started, access your owncloud installation at `http://localhost` or `http://owncloud.example.com`. On first run, owncloud will ask you to create an admin user.
 
 The `postgresql`, `php-fpm` and `nginx` containers are not specific to the owncloud installation and can be re-used with other applications as well.
 
