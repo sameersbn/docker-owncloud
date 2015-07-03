@@ -6,5 +6,5 @@ $AUTOCONFIG = array(
   "dbuser"        => "{{DB_USER}}",
   "dbpass"        => "{{DB_PASS}}",
   "dbtableprefix" => "",
-  "directory"     => "{{OWNCLOUD_DATA_DIR}}/data",
+  "directory"     => "{{OWNCLOUD_OCDATA_DIR}}",
 );

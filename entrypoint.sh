@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+OWNCLOUD_CONF_DIR=${OWNCLOUD_DATA_DIR}/conf
+OWNCLOUD_OCDATA_DIR=${OWNCLOUD_DATA_DIR}/data
+
 OWNCLOUD_FQDN=${OWNCLOUD_FQDN:-localhost}
 
 DB_TYPE=${DB_TYPE:-}
@@ -81,13 +84,13 @@ esac
 chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_DATA_DIR}/
 
 # create the data and conf directories
-sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_DATA_DIR}/data
-sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_DATA_DIR}/conf
+sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_OCDATA_DIR}
+sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_CONF_DIR}
 
 # create symlinks to config.php
-sudo -HEu ${OWNCLOUD_USER}  ln -sf ${OWNCLOUD_DATA_DIR}/conf/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
+sudo -HEu ${OWNCLOUD_USER}  ln -sf ${OWNCLOUD_CONF_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
 
-if [ ! -f ${OWNCLOUD_DATA_DIR}/conf/config.php ]; then
+if [ ! -f ${OWNCLOUD_CONF_DIR}/config.php ]; then
   # copy configuration template
   sudo -HEu ${OWNCLOUD_USER} cp /var/cache/owncloud/conf/owncloud/autoconfig.php ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
 
@@ -100,7 +103,7 @@ if [ ! -f ${OWNCLOUD_DATA_DIR}/conf/config.php ]; then
   sudo -HEu ${OWNCLOUD_USER} sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
 
   # configure owncloud data directory
-  sudo -HEu ${OWNCLOUD_USER} sed -i 's,{{OWNCLOUD_DATA_DIR}},'"${OWNCLOUD_DATA_DIR}"',' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+  sudo -HEu ${OWNCLOUD_USER} sed -i 's,{{OWNCLOUD_OCDATA_DIR}},'"${OWNCLOUD_OCDATA_DIR}"',' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
 fi
 
 # create VERSION file, not used at the moment but might be required in the future
