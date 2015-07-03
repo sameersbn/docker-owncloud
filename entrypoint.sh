@@ -3,17 +3,6 @@ set -e
 
 OWNCLOUD_FQDN=${OWNCLOUD_FQDN:-localhost}
 
-# create the data and conf directories
-mkdir -p ${OWNCLOUD_DATA_DIR}/data
-mkdir -p ${OWNCLOUD_DATA_DIR}/conf
-
-# create symlinks
-ln -sf ${OWNCLOUD_DATA_DIR}/data ${OWNCLOUD_INSTALL_DIR}/data
-ln -sf ${OWNCLOUD_DATA_DIR}/conf/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
-
-# fix ownership of the OWNCLOUD_DATA_DIR
-chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_DATA_DIR}/
-
 DB_TYPE=${DB_TYPE:-}
 DB_HOST=${DB_HOST:-}
 DB_PORT=${DB_PORT:-}
@@ -87,6 +76,16 @@ case ${DB_TYPE} in
     exit 1
     ;;
 esac
+
+# create the data and conf directories
+mkdir -p ${OWNCLOUD_DATA_DIR}/data
+mkdir -p ${OWNCLOUD_DATA_DIR}/conf
+
+# create symlinks
+ln -sf ${OWNCLOUD_DATA_DIR}/conf/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
+
+# fix ownership of the OWNCLOUD_DATA_DIR
+chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_DATA_DIR}/
 
 if [ ! -f ${OWNCLOUD_DATA_DIR}/conf/config.php ]; then
   # copy configuration template
