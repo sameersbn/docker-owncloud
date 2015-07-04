@@ -75,7 +75,7 @@ Will create the owncloud container exposing the owncloud source. The container w
 # create nginx container
 docker run -d --name=nginx \
   --publish 80:80 \
-  --link owncloud:php-fpm \
+  --link owncloud:owncloud-php-fpm \
   --volumes-from nginxSites \
   --volumes-from owncloud \
   sameersbn/nginx:latest
@@ -141,13 +141,13 @@ Will create a `php-fpm` container for use with owncloud. As with the case of the
 # create nginx container
 docker run -d --name=nginx \
   --publish 80:80 \
-  --link phpFpm:php-fpm \
+  --link phpFpm:owncloud-php-fpm \
   --volumes-from nginxSites \
   --volumes-from owncloud \
   sameersbn/nginx:latest
 ```
 
-Will create a `nginx` container and listen on host port `80`. If port `80` is already in use, then you can change the host port in the above command. The owncloud virtual host configuration will already be available in the `nginxSites` volume as it will be installed by the `owncloud` container in the previous commands. The `php-fpm` link alias will allow the nginx container to address the `phpFpm` container using the `php-fpm` hostname. The `owncloud` volume import will make the owncloud source available to the nginx container, thereby allowing it to handle requests to static site assets. The `nginx` container can be used for hosting other applications or act as a load balancer and can be treated as a generic `nginx` container just like the `postgresql` and `php-fpm` containers.
+Will create a `nginx` container and listen on host port `80`. If port `80` is already in use, then you can change the host port in the above command. The owncloud virtual host configuration will already be available in the `nginxSites` volume as it will be installed by the `owncloud` container in the previous commands. The `owncloud-php-fpm` link alias will allow the nginx container to address the `phpFpm` container using the `owncloud-php-fpm` hostname. The `owncloud` volume import will make the owncloud source available to the nginx container, thereby allowing it to handle requests to static site assets. The `nginx` container can be used for hosting other applications or act as a load balancer and can be treated as a generic `nginx` container just like the `postgresql` and `php-fpm` containers.
 
 All of the above setup can be achived using `docker-compose-shared-workers.yml` file present in this repository. Make sure you update the `OWNCLOUD_FQDN` in the `docker-compose-shared-workers.yml` file before starting it up
 
