@@ -19,7 +19,7 @@ RUN apt-get update \
 COPY install.sh /var/cache/owncloud/install.sh
 RUN bash /var/cache/owncloud/install.sh
 
-COPY conf/ /var/cache/owncloud/conf/
+COPY conf/ /etc/owncloud/conf/
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 

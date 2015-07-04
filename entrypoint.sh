@@ -87,7 +87,7 @@ oc_configure_database() {
 
   if [ ! -f ${OWNCLOUD_CONF_DIR}/config.php ]; then
     # copy configuration template
-    sudo -HEu ${OWNCLOUD_USER} cp /var/cache/owncloud/conf/owncloud/autoconfig.php ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+    sudo -HEu ${OWNCLOUD_USER} cp /etc/owncloud/conf/owncloud/autoconfig.php ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
 
     # configure database connection
     sudo -HEu ${OWNCLOUD_USER} sed -i 's/{{DB_TYPE}}/'"${DB_TYPE}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
@@ -106,7 +106,7 @@ oc_install_vhost() {
   OWNCLOUD_FQDN=${OWNCLOUD_FQDN:-localhost}
   # install nginx configuration, if not exists
   if [ -d /etc/nginx/sites-enabled -a ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]; then
-    cp /var/cache/owncloud/conf/nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
+    cp /etc/owncloud/conf/nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
     sed -i 's,{{OWNCLOUD_FQDN}},'"${OWNCLOUD_FQDN}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
     sed -i 's,{{OWNCLOUD_INSTALL_DIR}},'"${OWNCLOUD_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
   fi
