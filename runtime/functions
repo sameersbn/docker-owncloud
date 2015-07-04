@@ -116,7 +116,7 @@ oc_update_volume_version() {
   # create VERSION file, not used at the moment but might be required in the future
   CURRENT_VERSION=
   [[ -f ${OWNCLOUD_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${OWNCLOUD_DATA_DIR}/VERSION)
-  if [[ "${OWNCLOUD_VERSION}" != "${CURRENT_VERSION}" ]]; then
+  if [[ ${OWNCLOUD_VERSION} != ${CURRENT_VERSION} ]]; then
     echo -n "${OWNCLOUD_VERSION}" | sudo -HEu ${OWNCLOUD_USER} tee ${OWNCLOUD_DATA_DIR}/VERSION >/dev/null
   fi
 }
