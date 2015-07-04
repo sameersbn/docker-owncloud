@@ -1,9 +1,3 @@
-nginxSites:
-  image: busybox
-  volumes:
-    - /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled
-  command: tail -f /dev/null
-
 postgresql:
   image: sameersbn/postgresql:latest
   environment:
@@ -21,8 +15,7 @@ owncloud:
     - postgresql:postgresql
   volumes:
     - /srv/docker/owncloud/owncloud:/var/lib/owncloud
-  volumes_from:
-    - nginxSites
+    - /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled
   command: tail -f /dev/null
 
 phpFpm:
@@ -36,8 +29,9 @@ nginx:
   image: sameersbn/nginx
   links:
     - phpFpm:owncloud-php-fpm
+  volumes:
+    - /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled
   volumes_from:
-    - nginxSites
     - owncloud
   ports:
     - "80:80"
