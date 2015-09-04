@@ -3,10 +3,10 @@ set -e
 
 . /etc/owncloud/functions
 
-oc_install_vhost
+install_vhost
 
-oc_initialize_volumes
-oc_configure_database
-oc_update_volume_version
+initialize_volumes
+configure_database
+update_volume_version
 
 exec $@

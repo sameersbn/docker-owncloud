@@ -76,7 +76,7 @@ case ${DB_TYPE} in
     ;;
 esac
 
-oc_initialize_volumes() {
+initialize_volumes() {
   # fix ownership of the OWNCLOUD_DATA_DIR
   chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_DATA_DIR}/
 
@@ -85,7 +85,7 @@ oc_initialize_volumes() {
   sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_CONF_DIR}
 }
 
-oc_configure_database() {
+configure_database() {
   if [[ ! -f ${OWNCLOUD_CONF_DIR}/config.php ]]; then
     # copy configuration template
     sudo -HEu ${OWNCLOUD_USER} cp /etc/owncloud/conf/owncloud/autoconfig.php ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
@@ -103,7 +103,7 @@ oc_configure_database() {
   fi
 }
 
-oc_install_vhost() {
+install_vhost() {
   # install nginx configuration, if not exists
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]]; then
     cp /etc/owncloud/conf/nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
@@ -112,7 +112,7 @@ oc_install_vhost() {
   fi
 }
 
-oc_update_volume_version() {
+update_volume_version() {
   # create VERSION file, not used at the moment but might be required in the future
   CURRENT_VERSION=
   [[ -f ${OWNCLOUD_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${OWNCLOUD_DATA_DIR}/VERSION)
