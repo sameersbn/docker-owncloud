@@ -10,7 +10,7 @@ ENV OWNCLOUD_CONF_DIR=${OWNCLOUD_DATA_DIR}/conf \
     OWNCLOUD_OCDATA_DIR=${OWNCLOUD_DATA_DIR}/ocdata
 
 RUN apt-get update \
- && apt-get install -y php5-pgsql php5-mysql php5-gd php-file \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y php5-pgsql php5-mysql php5-gd php-file \
       php5-curl php5-intl php5-mcrypt php5-ldap \
       php-net-ftp php5-gmp php5-apcu php5-imagick \
  && php5enmod mcrypt \
