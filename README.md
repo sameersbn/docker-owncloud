@@ -1,3 +1,4 @@
+[![Docker Repository on Quay.io](https://quay.io/repository/sameersbn/owncloud/status "Docker Repository on Quay.io")](https://quay.io/repository/sameersbn/owncloud)
 
 **EXPERIMENTAL: Please do not use in production**
 
