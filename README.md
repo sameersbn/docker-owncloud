@@ -43,7 +43,7 @@ docker run -d --name=postgresql \
   --env 'DB_USER=owncloud' \
   --env 'DB_PASS=password' --env 'DB_NAME=owncloud_db' \
   --volume /srv/docker/owncloud/postgresql:/var/lib/postgresql \
-  quay.io/sameersbn/postgresql:latest
+  sameersbn/postgresql:latest
 ```
 
 Will create a postgresql container and a user and schema for the owncloud installation. This container can be used as a regular postgresql server for other applications if desired. It is not tied owncloud.
@@ -55,7 +55,7 @@ docker run -d --name=owncloud \
   --link postgresql:postgresql \
   --volume /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled \
   --volume /srv/docker/owncloud/owncloud:/var/lib/owncloud \
-  quay.io/sameersbn/owncloud:latest
+  sameersbn/owncloud:latest
 ```
 
 Will create the owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx in the volume mounted at `/etc/nginx/sites-enabled`. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `${OWNCLOUD_FQDN}.conf` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/var/lib/owncloud`.
@@ -67,7 +67,7 @@ docker run -d --name=nginx \
   --link owncloud:owncloud-php-fpm \
   --volume /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled \
   --volumes-from owncloud \
-  quay.io/sameersbn/nginx:latest
+  sameersbn/nginx:latest
 ```
 
 Will create a `nginx` container and listen on host port `80`. If port `80` is already in use, then you can change the host port in the above command. The owncloud virtual host configuration will already be available in the volume mounted at `/etc/nginx/sites-enabled` volume as it will be installed by the `owncloud` container in the previous command. The `owncloud` volume import will make the owncloud source available to the nginx container, thereby allowing it to handle requests to static site assets. This `nginx` container can be used for hosting other applications or act as a load balancer and can be treated as a generic `nginx` container just like the `postgresql` container.
@@ -86,7 +86,7 @@ docker run -d --name=postgresql \
   --env 'DB_USER=owncloud' \
   --env 'DB_PASS=password' --env 'DB_NAME=owncloud_db' \
   --volume /srv/docker/owncloud/postgresql:/var/lib/postgresql \
-  quay.io/sameersbn/postgresql:latest
+  sameersbn/postgresql:latest
 ```
 
 Will create a postgresql container and a user and schema for the owncloud installation. This container can be used as a regular postgresql server for other applications if desired. It is not tied owncloud.
@@ -98,7 +98,7 @@ docker run -d --name=owncloud \
   --link postgresql:postgresql \
   --volume /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled \
   --volume /srv/docker/owncloud/owncloud:/var/lib/owncloud
-  quay.io/sameersbn/owncloud:latest \
+  sameersbn/owncloud:latest \
   echo "Data-only container with owncloud source"
 ```
 
@@ -109,7 +109,7 @@ Will create a data-only owncloud container exposing the owncloud source. The con
 docker run -d --name=phpFpm \
   --link postgresql:postgresql \
   --volumes-from owncloud \
-  quay.io/sameersbn/php5-fpm:latest
+  sameersbn/php5-fpm:latest
 ```
 
 Will create a `php-fpm` container for use with owncloud. As with the case of the `postgresql` container, it can be used as a regular `php-fpm` server for other applications if desired. The link to `postgresql` allows us to use the hostname `postgresql` while specifying the database connection parameters in the owncloud setup. The `owncloud` volume import makes the owncloud source available to the `phpFpm` container.
@@ -121,7 +121,7 @@ docker run -d --name=nginx \
   --link phpFpm:owncloud-php-fpm \
   --volume /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled \
   --volumes-from owncloud \
-  quay.io/sameersbn/nginx:latest
+  sameersbn/nginx:latest
 ```
 
 Will create a `nginx` container and listen on host port `80`. If port `80` is already in use, then you can change the host port in the above command. The owncloud virtual host configuration will already be available in the volume mounted at `/etc/nginx/sites-enabled` as it will be installed by the `owncloud` container in the previous command. The `owncloud-php-fpm` link alias will allow the nginx container to address the `phpFpm` container using the `owncloud-php-fpm` hostname. The `owncloud` volume import will make the owncloud source available to the nginx container, thereby allowing it to handle requests to static site assets. The `nginx` container can be used for hosting other applications or act as a load balancer and can be treated as a generic `nginx` container just like the `postgresql` and `php-fpm` containers.

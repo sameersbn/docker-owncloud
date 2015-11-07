@@ -1,5 +1,5 @@
 postgresql:
-  image: quay.io/sameersbn/postgresql:latest
+  image: sameersbn/postgresql:latest
   environment:
     - DB_USER=owncloud
     - DB_PASS=password
@@ -8,7 +8,7 @@ postgresql:
     - /srv/docker/owncloud/postgresql:/var/lib/postgresql
 
 owncloud:
-  image: quay.io/sameersbn/owncloud:latest
+  image: sameersbn/owncloud:latest
   environment:
     - OWNCLOUD_FQDN=cloud.example.com
   links:
@@ -18,7 +18,7 @@ owncloud:
     - /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled
 
 nginx:
-  image: quay.io/sameersbn/nginx
+  image: sameersbn/nginx
   links:
     - owncloud:owncloud-php-fpm
   volumes:
