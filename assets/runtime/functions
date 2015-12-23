@@ -100,15 +100,6 @@ owncloud_check_database_connection() {
   echo
 }
 
-initialize_volumes() {
-  # fix ownership of the OWNCLOUD_DATA_DIR
-  chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_DATA_DIR}/
-
-  # create the data and conf directories
-  sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_OCDATA_DIR}
-  sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_CONF_DIR}
-}
-
 owncloud_configure_database() {
   echo -n "Configuring owncloud::database"
 
@@ -148,6 +139,24 @@ update_volume_version() {
   if [[ ${OWNCLOUD_VERSION} != ${CURRENT_VERSION} ]]; then
     echo -n "${OWNCLOUD_VERSION}" | sudo -HEu ${OWNCLOUD_USER} tee ${OWNCLOUD_DATA_DIR}/VERSION >/dev/null
   fi
+}
+
+initialize_datadir() {
+  echo "Initializing datadir..."
+  chmod 0755 ${OWNCLOUD_DATA_DIR}
+  chown ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_DATA_DIR}
+
+  mkdir -p ${OWNCLOUD_OCDATA_DIR}
+  chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_OCDATA_DIR}
+  chmod -R 0750 ${OWNCLOUD_OCDATA_DIR}
+
+  mkdir -p ${OWNCLOUD_CONF_DIR}
+  chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_CONF_DIR}
+  chmod -R 0750 ${OWNCLOUD_CONF_DIR}
+}
+
+initialize_volumes() {
+  initialize_datadir
 }
 
 configure_owncloud() {
