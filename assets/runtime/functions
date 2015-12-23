@@ -109,7 +109,7 @@ initialize_volumes() {
   sudo -HEu ${OWNCLOUD_USER} mkdir -p ${OWNCLOUD_CONF_DIR}
 }
 
-configure_database() {
+owncloud_configure_database() {
   echo -n "Configuring owncloud::database"
 
   owncloud_finalize_database_parameters

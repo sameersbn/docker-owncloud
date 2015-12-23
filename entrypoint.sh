@@ -6,7 +6,7 @@ set -e
 install_vhost
 
 initialize_volumes
-configure_database
+owncloud_configure_database
 update_volume_version
 
 exec $@
