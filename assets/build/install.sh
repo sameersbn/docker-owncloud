@@ -18,8 +18,8 @@ ln -sf ${OWNCLOUD_CONF_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
 cat > ${OWNCLOUD_INSTALL_DIR}/.user.ini <<EOF
 default_charset='UTF-8'
 output_buffering=off
-upload_max_filesize=2048M
-post_max_size=2048M
+upload_max_filesize=4G
+post_max_size=4G
 EOF
 
 # set directory permissions
