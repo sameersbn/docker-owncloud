@@ -1,13 +1,6 @@
 #!/bin/bash
-
-OWNCLOUD_FQDN=${OWNCLOUD_FQDN:-localhost}
-
-DB_TYPE=${DB_TYPE:-}
-DB_HOST=${DB_HOST:-}
-DB_PORT=${DB_PORT:-}
-DB_NAME=${DB_NAME:-}
-DB_USER=${DB_USER:-}
-DB_PASS=${DB_PASS:-}
+set -e
+source ${OWNCLOUD_RUNTIME_DIR}/env-defaults
 
 # is a mysql or postgresql database linked?
 # requires that the mysql or postgresql containers have exposed
