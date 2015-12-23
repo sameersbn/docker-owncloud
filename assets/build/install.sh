@@ -15,12 +15,11 @@ rm -rf ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2
 # create symlink to config.php
 ln -sf ${OWNCLOUD_CONF_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
 
-cat > ${OWNCLOUD_INSTALL_DIR}/.user.ini <<EOF
-default_charset='UTF-8'
-output_buffering=off
-upload_max_filesize=4G
-post_max_size=4G
-EOF
+# upload_max_filesize
+(
+  echo "default_charset='UTF-8'"
+  echo "output_buffering=off"
+) > ${OWNCLOUD_INSTALL_DIR}/.user.ini
 
 # set directory permissions
 find ${OWNCLOUD_INSTALL_DIR}/ -type f -print0 | xargs -0 chmod 0640

@@ -12,6 +12,7 @@ owncloud:
   environment:
     - DEBUG=false
     - OWNCLOUD_FQDN=cloud.example.com
+    - OWNCLOUD_UPLOAD_MAX_FILESIZE=4G
   links:
     - postgresql:postgresql
   volumes:

@@ -162,6 +162,14 @@ owncloud_migrate_database() {
   fi
 }
 
+owncloud_configure_max_upload_size() {
+  echo "Configuring owncloud::max_upload_size..."
+  (
+    echo "upload_max_filesize=${OWNCLOUD_UPLOAD_MAX_FILESIZE}"
+    echo "post_max_size=${OWNCLOUD_UPLOAD_MAX_FILESIZE}"
+  ) >> ${OWNCLOUD_INSTALL_DIR}/.user.ini
+}
+
 nginx_install_vhost_config() {
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]]; then
     echo "Installing nginx virtual host configuration..."
@@ -193,6 +201,7 @@ configure_owncloud() {
   echo "Configuring owncloud..."
   owncloud_configure_database
   owncloud_migrate_database
+  owncloud_configure_max_upload_size
 }
 
 configure_nginx() {
