@@ -5,8 +5,7 @@ set -e
 
 install_vhost
 
-initialize_volumes
-
+initialize_system
 configure_owncloud
 
 exec $@

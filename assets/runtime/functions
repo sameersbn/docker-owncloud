@@ -155,7 +155,7 @@ initialize_datadir() {
   chmod -R 0750 ${OWNCLOUD_CONF_DIR}
 }
 
-initialize_volumes() {
+initialize_system() {
   initialize_datadir
 }
 
