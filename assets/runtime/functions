@@ -11,6 +11,10 @@ exec_as_owncloud() {
   fi
 }
 
+occ() {
+  exec_as_owncloud php occ $@
+}
+
 owncloud_finalize_database_parameters() {
   # is a mysql or postgresql database linked?
   # requires that the mysql or postgresql containers have exposed
