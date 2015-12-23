@@ -32,4 +32,4 @@ VOLUME ["${OWNCLOUD_INSTALL_DIR}", "${OWNCLOUD_DATA_DIR}"]
 
 WORKDIR ${OWNCLOUD_INSTALL_DIR}
 ENTRYPOINT ["/sbin/entrypoint.sh"]
-CMD ["/usr/sbin/php5-fpm"]
+CMD ["app:owncloud"]
