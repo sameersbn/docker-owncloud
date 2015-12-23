@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-. /etc/owncloud/functions
+. ${OWNCLOUD_RUNTIME_DIR}/functions
 
 install_vhost
 

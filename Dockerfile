@@ -4,22 +4,26 @@ MAINTAINER sameer@damagehead.com
 ENV OWNCLOUD_VERSION=8.0.0 \
     OWNCLOUD_USER=${PHP_FPM_USER} \
     OWNCLOUD_INSTALL_DIR=/var/www/owncloud \
-    OWNCLOUD_DATA_DIR=/var/lib/owncloud
+    OWNCLOUD_DATA_DIR=/var/lib/owncloud \
+    OWNCLOUD_CACHE_DIR=/etc/docker-owncloud
 
-ENV OWNCLOUD_CONF_DIR=${OWNCLOUD_DATA_DIR}/conf \
+ENV OWNCLOUD_BUILD_DIR=${OWNCLOUD_CACHE_DIR}/build \
+    OWNCLOUD_RUNTIME_DIR=${OWNCLOUD_CACHE_DIR}/runtime \
+    OWNCLOUD_CONF_DIR=${OWNCLOUD_DATA_DIR}/conf \
     OWNCLOUD_OCDATA_DIR=${OWNCLOUD_DATA_DIR}/ocdata
 
 RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y php5-pgsql php5-mysql php5-gd php-file \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+      php5-pgsql php5-mysql php5-gd php-file \
       php5-curl php5-intl php5-mcrypt php5-ldap \
       php-net-ftp php5-gmp php5-apcu php5-imagick \
  && php5enmod mcrypt \
  && rm -rf /var/lib/apt/lists/*
 
-COPY install.sh /var/cache/owncloud/install.sh
-RUN bash /var/cache/owncloud/install.sh
+COPY assets/build/ ${OWNCLOUD_BUILD_DIR}/
+RUN bash ${OWNCLOUD_BUILD_DIR}/install.sh
 
-COPY runtime/ /etc/owncloud/
+COPY assets/runtime/ ${OWNCLOUD_RUNTIME_DIR}/
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 
