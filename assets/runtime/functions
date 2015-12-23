@@ -2,6 +2,15 @@
 set -e
 source ${OWNCLOUD_RUNTIME_DIR}/env-defaults
 
+## Execute a command as OWNCLOUD_USER
+exec_as_owncloud() {
+  if [[ $(whoami) == ${OWNCLOUD_USER} ]]; then
+    $@
+  else
+    sudo -HEu ${OWNCLOUD_USER} "$@"
+  fi
+}
+
 owncloud_finalize_database_parameters() {
   # is a mysql or postgresql database linked?
   # requires that the mysql or postgresql containers have exposed
@@ -108,18 +117,18 @@ owncloud_configure_database() {
 
   if [[ ! -f ${OWNCLOUD_CONF_DIR}/config.php ]]; then
     # copy configuration template
-    sudo -HEu ${OWNCLOUD_USER} cp ${OWNCLOUD_RUNTIME_DIR}/conf/owncloud/autoconfig.php ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+    exec_as_owncloud cp ${OWNCLOUD_RUNTIME_DIR}/conf/owncloud/autoconfig.php ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
 
     # configure database connection
-    sudo -HEu ${OWNCLOUD_USER} sed -i 's/{{DB_TYPE}}/'"${DB_TYPE}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-    sudo -HEu ${OWNCLOUD_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-    sudo -HEu ${OWNCLOUD_USER} sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-    sudo -HEu ${OWNCLOUD_USER} sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-    sudo -HEu ${OWNCLOUD_USER} sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-    sudo -HEu ${OWNCLOUD_USER} sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+    exec_as_owncloud sed -i 's/{{DB_TYPE}}/'"${DB_TYPE}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+    exec_as_owncloud sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+    exec_as_owncloud sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+    exec_as_owncloud sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+    exec_as_owncloud sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+    exec_as_owncloud sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
 
     # configure owncloud data directory
-    sudo -HEu ${OWNCLOUD_USER} sed -i 's,{{OWNCLOUD_OCDATA_DIR}},'"${OWNCLOUD_OCDATA_DIR}"',' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+    exec_as_owncloud sed -i 's,{{OWNCLOUD_OCDATA_DIR}},'"${OWNCLOUD_OCDATA_DIR}"',' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
   fi
 }
 
@@ -137,7 +146,7 @@ update_volume_version() {
   CURRENT_VERSION=
   [[ -f ${OWNCLOUD_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${OWNCLOUD_DATA_DIR}/VERSION)
   if [[ ${OWNCLOUD_VERSION} != ${CURRENT_VERSION} ]]; then
-    echo -n "${OWNCLOUD_VERSION}" | sudo -HEu ${OWNCLOUD_USER} tee ${OWNCLOUD_DATA_DIR}/VERSION >/dev/null
+    echo -n "${OWNCLOUD_VERSION}" | exec_as_owncloud tee ${OWNCLOUD_DATA_DIR}/VERSION >/dev/null
   fi
 }
 
