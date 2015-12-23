@@ -164,3 +164,7 @@ configure_owncloud() {
   owncloud_configure_database
   update_volume_version
 }
+
+configure_nginx() {
+  install_vhost
+}

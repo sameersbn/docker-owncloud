@@ -3,9 +3,8 @@ set -e
 
 . ${OWNCLOUD_RUNTIME_DIR}/functions
 
-install_vhost
-
 initialize_system
 configure_owncloud
+configure_nginx
 
 exec $@
