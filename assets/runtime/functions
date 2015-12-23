@@ -123,9 +123,9 @@ owncloud_configure_database() {
   fi
 }
 
-install_vhost() {
-  # install nginx configuration, if not exists
+nginx_install_vhost_config() {
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]]; then
+    echo "Installing nginx virtual host configuration..."
     cp ${OWNCLOUD_RUNTIME_DIR}/conf/nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
     sed -i 's,{{OWNCLOUD_FQDN}},'"${OWNCLOUD_FQDN}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
     sed -i 's,{{OWNCLOUD_INSTALL_DIR}},'"${OWNCLOUD_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
@@ -166,5 +166,5 @@ configure_owncloud() {
 }
 
 configure_nginx() {
-  install_vhost
+  nginx_install_vhost_config
 }
