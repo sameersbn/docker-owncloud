@@ -136,21 +136,38 @@ owncloud_configure_database() {
   fi
 }
 
+owncloud_migrate_database() {
+  CACHE_VERSION=
+  [[ -f ${OWNCLOUD_DATA_DIR}/VERSION ]] && CACHE_VERSION=$(cat ${OWNCLOUD_DATA_DIR}/VERSION)
+  if [[ ${OWNCLOUD_VERSION} != ${CACHE_VERSION} ]]; then
+    # upgrade can only be performed after the firstrun.
+    # we count the number of tables in the database if its the firstrun.
+    case ${DB_TYPE} in
+      mysql)
+        QUERY="SELECT count(*) FROM information_schema.tables WHERE table_schema = '${DB_NAME}';"
+        COUNT=$(mysql -h ${DB_HOST} -P ${DB_PORT} -u ${DB_USER} ${DB_PASS:+-p$DB_PASS} -ss -e "${QUERY}")
+        ;;
+      pgsql)
+        QUERY="SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public';"
+        COUNT=$(PGPASSWORD="${DB_PASS}" psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -Atw -c "${QUERY}")
+        ;;
+    esac
+    if [[ ${COUNT} -gt 0 ]]; then
+      echo "Migrating database..."
+      occ maintenance:mode --on
+      occ upgrade
+      occ maintenance:mode --off
+    fi
+    echo -n "${OWNCLOUD_VERSION}" | exec_as_owncloud tee ${OWNCLOUD_DATA_DIR}/VERSION >/dev/null
+  fi
+}
+
 nginx_install_vhost_config() {
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]]; then
     echo "Installing nginx virtual host configuration..."
     cp ${OWNCLOUD_RUNTIME_DIR}/conf/nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
     sed -i 's,{{OWNCLOUD_FQDN}},'"${OWNCLOUD_FQDN}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
     sed -i 's,{{OWNCLOUD_INSTALL_DIR}},'"${OWNCLOUD_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
-  fi
-}
-
-update_volume_version() {
-  # create VERSION file, not used at the moment but might be required in the future
-  CURRENT_VERSION=
-  [[ -f ${OWNCLOUD_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${OWNCLOUD_DATA_DIR}/VERSION)
-  if [[ ${OWNCLOUD_VERSION} != ${CURRENT_VERSION} ]]; then
-    echo -n "${OWNCLOUD_VERSION}" | exec_as_owncloud tee ${OWNCLOUD_DATA_DIR}/VERSION >/dev/null
   fi
 }
 
@@ -175,7 +192,7 @@ initialize_system() {
 configure_owncloud() {
   echo "Configuring owncloud..."
   owncloud_configure_database
-  update_volume_version
+  owncloud_migrate_database
 }
 
 configure_nginx() {
