@@ -17,6 +17,7 @@ RUN apt-get update \
       php5-pgsql php5-mysql php5-gd php-file \
       php5-curl php5-intl php5-mcrypt php5-ldap \
       php-net-ftp php5-gmp php5-apcu php5-imagick \
+      mysql-client postgresql-client \
  && php5enmod mcrypt \
  && rm -rf /var/lib/apt/lists/*
 

@@ -75,6 +75,30 @@ owncloud_finalize_database_parameters() {
   DB_NAME=${DB_NAME:-ownclouddb}
 }
 
+owncloud_check_database_connection() {
+  case ${DB_TYPE} in
+    mysql)
+      prog="mysqladmin -h ${DB_HOST} -P ${DB_PORT} -u ${DB_USER} ${DB_PASS:+-p$DB_PASS} status"
+      ;;
+    pgsql)
+      prog=$(find /usr/lib/postgresql/ -name pg_isready)
+      prog="${prog} -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -t 1"
+      ;;
+  esac
+  timeout=60
+  while ! ${prog} >/dev/null 2>&1
+  do
+    timeout=$(expr $timeout - 1)
+    if [[ $timeout -eq 0 ]]; then
+      echo
+      echo "Could not connect to database server. Aborting..."
+      return 1
+    fi
+    echo -n "."
+    sleep 1
+  done
+  echo
+}
 
 initialize_volumes() {
   # fix ownership of the OWNCLOUD_DATA_DIR
@@ -86,7 +110,10 @@ initialize_volumes() {
 }
 
 configure_database() {
+  echo -n "Configuring owncloud::database"
+
   owncloud_finalize_database_parameters
+  owncloud_check_database_connection
 
   if [[ ! -f ${OWNCLOUD_CONF_DIR}/config.php ]]; then
     # copy configuration template
