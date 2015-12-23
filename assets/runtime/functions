@@ -114,7 +114,7 @@ owncloud_check_database_connection() {
 }
 
 owncloud_configure_database() {
-  echo -n "Configuring owncloud::database"
+  echo -n "Configuring ownCloud::database"
 
   owncloud_finalize_database_parameters
   owncloud_check_database_connection
@@ -163,7 +163,7 @@ owncloud_migrate_database() {
 }
 
 owncloud_configure_max_upload_size() {
-  echo "Configuring owncloud::max_upload_size..."
+  echo "Configuring ownCloud::max_upload_size..."
   (
     echo "upload_max_filesize=${OWNCLOUD_UPLOAD_MAX_FILESIZE}"
     echo "post_max_size=${OWNCLOUD_UPLOAD_MAX_FILESIZE}"
@@ -171,7 +171,7 @@ owncloud_configure_max_upload_size() {
 }
 
 owncloud_configure_max_file_uploads() {
-  echo "Configuring owncloud::max_file_uploads..."
+  echo "Configuring ownCloud::max_file_uploads..."
   echo "max_file_uploads=${OWNCLOUD_MAX_FILE_UPLOADS}" >> ${OWNCLOUD_INSTALL_DIR}/.user.ini
 }
 
@@ -203,7 +203,7 @@ initialize_system() {
 }
 
 configure_owncloud() {
-  echo "Configuring owncloud..."
+  echo "Configuring ownCloud..."
   owncloud_configure_database
   owncloud_migrate_database
   owncloud_configure_max_upload_size

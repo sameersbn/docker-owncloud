@@ -13,6 +13,7 @@ case ${1} in
 
     case ${1} in
       app:owncloud)
+        echo "Starting ownCloud..."
         exec /usr/sbin/php5-fpm
         ;;
       occ)

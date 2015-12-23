@@ -4,11 +4,11 @@ set -e
 mkdir -p ${OWNCLOUD_INSTALL_DIR}
 
 if [[ ! -f ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2 ]]; then
-  echo "Downloading OwnCloud ${OWNCLOUD_VERSION}..."
+  echo "Downloading ownCloud ${OWNCLOUD_VERSION}..."
   wget "https://download.owncloud.org/community/owncloud-${OWNCLOUD_VERSION}.tar.bz2" -O ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2
 fi
 
-echo "Extracting OwnCloud ${OWNCLOUD_VERSION}..."
+echo "Extracting ownCloud ${OWNCLOUD_VERSION}..."
 tar -xf ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2 --strip=1 -C ${OWNCLOUD_INSTALL_DIR}
 rm -rf ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2
 
