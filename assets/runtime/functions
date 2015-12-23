@@ -149,3 +149,9 @@ update_volume_version() {
     echo -n "${OWNCLOUD_VERSION}" | sudo -HEu ${OWNCLOUD_USER} tee ${OWNCLOUD_DATA_DIR}/VERSION >/dev/null
   fi
 }
+
+configure_owncloud() {
+  echo "Configuring owncloud..."
+  owncloud_configure_database
+  update_volume_version
+}
