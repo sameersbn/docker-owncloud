@@ -25,6 +25,7 @@ COPY assets/build/ ${OWNCLOUD_BUILD_DIR}/
 RUN bash ${OWNCLOUD_BUILD_DIR}/install.sh
 
 COPY assets/runtime/ ${OWNCLOUD_RUNTIME_DIR}/
+COPY assets/tools/ /usr/bin/
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 
