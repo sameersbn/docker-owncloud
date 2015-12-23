@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## DEBUGGING
+DEBUG=${DEBUG:-false}
+
 ## CORE
 OWNCLOUD_FQDN=${OWNCLOUD_FQDN:-localhost}
 

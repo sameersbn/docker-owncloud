@@ -10,6 +10,7 @@ postgresql:
 owncloud:
   image: sameersbn/owncloud:latest
   environment:
+    - DEBUG=false
     - OWNCLOUD_FQDN=cloud.example.com
   links:
     - postgresql:postgresql

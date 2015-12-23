@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
+source ${OWNCLOUD_RUNTIME_DIR}/functions
 
-. ${OWNCLOUD_RUNTIME_DIR}/functions
+[[ $DEBUG == true ]] && set -x
 
 case ${1} in
   app:owncloud|occ)
