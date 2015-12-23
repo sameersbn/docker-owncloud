@@ -136,7 +136,7 @@ owncloud_configure_database() {
   fi
 }
 
-owncloud_migrate_database() {
+owncloud_upgrade() {
   CACHE_VERSION=
   [[ -f ${OWNCLOUD_DATA_DIR}/VERSION ]] && CACHE_VERSION=$(cat ${OWNCLOUD_DATA_DIR}/VERSION)
   if [[ ${OWNCLOUD_VERSION} != ${CACHE_VERSION} ]]; then
@@ -153,7 +153,7 @@ owncloud_migrate_database() {
         ;;
     esac
     if [[ ${COUNT} -gt 0 ]]; then
-      echo "Migrating database..."
+      echo "Upgrading ownCloud..."
       occ maintenance:mode --on
       occ upgrade
       occ maintenance:mode --off
@@ -205,7 +205,7 @@ initialize_system() {
 configure_owncloud() {
   echo "Configuring ownCloud..."
   owncloud_configure_database
-  owncloud_migrate_database
+  owncloud_upgrade
   owncloud_configure_max_upload_size
   owncloud_configure_max_file_uploads
 }
