@@ -175,9 +175,9 @@ owncloud_configure_max_file_uploads() {
   echo "max_file_uploads=${OWNCLOUD_MAX_FILE_UPLOADS}" >> ${OWNCLOUD_INSTALL_DIR}/.user.ini
 }
 
-nginx_install_vhost_config() {
+nginx_configure_virtualhost() {
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]]; then
-    echo "Installing nginx virtual host configuration..."
+    echo "Installing virtualhost configuration..."
     cp ${OWNCLOUD_RUNTIME_DIR}/config/nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
     sed -i 's,{{OWNCLOUD_FQDN}},'"${OWNCLOUD_FQDN}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
     sed -i 's,{{OWNCLOUD_INSTALL_DIR}},'"${OWNCLOUD_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
@@ -211,5 +211,5 @@ configure_owncloud() {
 }
 
 configure_nginx() {
-  nginx_install_vhost_config
+  nginx_configure_virtualhost
 }
