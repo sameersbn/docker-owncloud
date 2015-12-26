@@ -15,6 +15,10 @@ rm -rf ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2
 # create symlink to config.php
 ln -sf ${OWNCLOUD_CONF_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
 
+# required by owncloud
+sed -i "s|[;]*[ ]*always_populate_raw_post_data = .*|always_populate_raw_post_data = -1|" /etc/php5/fpm/php.ini
+sed -i "s|[;]*[ ]*always_populate_raw_post_data = .*|always_populate_raw_post_data = -1|" /etc/php5/cli/php.ini
+
 # upload_max_filesize
 (
   echo "default_charset='UTF-8'"
