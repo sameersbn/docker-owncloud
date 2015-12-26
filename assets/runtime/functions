@@ -2,6 +2,7 @@
 set -e
 source ${OWNCLOUD_RUNTIME_DIR}/env-defaults
 
+OWNCLOUD_TEMPLATES_DIR=${OWNCLOUD_RUNTIME_DIR}/config
 OWNCLOUD_CONFIG_PHP=${OWNCLOUD_CONF_DIR}/config.php
 OWNCLOUD_AUTOCONFIG_PHP=${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
 
@@ -141,7 +142,7 @@ owncloud_configure_database() {
 
   if [[ ! -f ${OWNCLOUD_CONFIG_PHP} ]]; then
     # firstrun, install autoconfig.php
-    exec_as_owncloud cp ${OWNCLOUD_RUNTIME_DIR}/config/owncloud/autoconfig.php ${OWNCLOUD_AUTOCONFIG_PHP}
+    exec_as_owncloud cp ${OWNCLOUD_TEMPLATES_DIR}/owncloud/autoconfig.php ${OWNCLOUD_AUTOCONFIG_PHP}
     exec_as_owncloud sed -i 's/{{DB_TYPE}}/'"${DB_TYPE}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
     exec_as_owncloud sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
     exec_as_owncloud sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
@@ -200,7 +201,7 @@ owncloud_configure_max_file_uploads() {
 nginx_configure_virtualhost() {
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]]; then
     echo "Installing virtualhost configuration..."
-    cp ${OWNCLOUD_RUNTIME_DIR}/config/nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
+    cp ${OWNCLOUD_TEMPLATES_DIR}/nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
     sed -i 's,{{OWNCLOUD_FQDN}},'"${OWNCLOUD_FQDN}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
     sed -i 's,{{OWNCLOUD_INSTALL_DIR}},'"${OWNCLOUD_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
   fi
