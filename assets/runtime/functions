@@ -6,6 +6,18 @@ OWNCLOUD_TEMPLATES_DIR=${OWNCLOUD_RUNTIME_DIR}/config
 OWNCLOUD_CONFIG_PHP=${OWNCLOUD_CONF_DIR}/config.php
 OWNCLOUD_AUTOCONFIG_PHP=${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
 
+# Compares two version strings `a` and `b`
+# Returns
+#   - negative integer, if `a` is less than `b`
+#   - 0, if `a` and `b` are equal
+#   - non-negative integer, if `a` is greater than `b`
+vercmp() {
+  expr '(' "$1" : '\([^.]*\)' ')' '-' '(' "$2" : '\([^.]*\)' ')' '|' \
+       '(' "$1.0" : '[^.]*[.]\([^.]*\)' ')' '-' '(' "$2.0" : '[^.]*[.]\([^.]*\)' ')' '|' \
+       '(' "$1.0.0" : '[^.]*[.][^.]*[.]\([^.]*\)' ')' '-' '(' "$2.0.0" : '[^.]*[.][^.]*[.]\([^.]*\)' ')' '|' \
+       '(' "$1.0.0.0" : '[^.]*[.][^.]*[.][^.]*[.]\([^.]*\)' ')' '-' '(' "$2.0.0.0" : '[^.]*[.][^.]*[.][^.]*[.]\([^.]*\)' ')'
+}
+
 ## Execute a command as OWNCLOUD_USER
 exec_as_owncloud() {
   if [[ $(whoami) == ${OWNCLOUD_USER} ]]; then
@@ -205,6 +217,18 @@ owncloud_upgrade() {
   CACHE_VERSION=
   [[ -f ${OWNCLOUD_DATA_DIR}/VERSION ]] && CACHE_VERSION=$(cat ${OWNCLOUD_DATA_DIR}/VERSION)
   if [[ ${OWNCLOUD_VERSION} != ${CACHE_VERSION} ]]; then
+
+    ## version check, only upgrades are allowed
+    if [[ -n ${CACHE_VERSION} && $(vercmp ${OWNCLOUD_VERSION} ${CACHE_VERSION}) -lt 0 ]]; then
+      echo
+      echo "ERROR: "
+      echo "  Cannot downgrade from ownCloud version ${CACHE_VERSION} to ${OWNCLOUD_VERSION}."
+      echo "  Only upgrades are allowed. Please use sameersbn/owncloud:${CACHE_VERSION} or higher."
+      echo "  Cannot continue. Aborting!"
+      echo
+      return 1
+    fi
+
     # upgrade can only be performed after the firstrun.
     # we count the number of tables in the database if its the firstrun.
     case ${DB_TYPE} in
