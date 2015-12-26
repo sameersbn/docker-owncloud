@@ -19,6 +19,22 @@ occ() {
   exec_as_owncloud php occ $@
 }
 
+## Copies configuration template in ${OWNCLOUD_TEMPLATES_DIR} to the destination as the specified USER
+# $1: copy-as user
+# $2: source file
+# $3: destination location
+# $4: mode of destination
+install_template() {
+  local USR=${1}
+  local SRC=${2}
+  local DEST=${3}
+  local MODE=${4:-0644}
+  if [[ -f ${OWNCLOUD_TEMPLATES_DIR}/${SRC} ]]; then
+    sudo -HEu ${USR} cp ${OWNCLOUD_TEMPLATES_DIR}/${SRC} ${DEST}
+  fi
+  chmod ${MODE} ${DEST}
+}
+
 owncloud_set_param() {
   local key=${1}
   local value=${2}
@@ -142,7 +158,7 @@ owncloud_configure_database() {
 
   if [[ ! -f ${OWNCLOUD_CONFIG_PHP} ]]; then
     # firstrun, install autoconfig.php
-    exec_as_owncloud cp ${OWNCLOUD_TEMPLATES_DIR}/owncloud/autoconfig.php ${OWNCLOUD_AUTOCONFIG_PHP}
+    install_template ${OWNCLOUD_USER} owncloud/autoconfig.php ${OWNCLOUD_AUTOCONFIG_PHP} 0644
     exec_as_owncloud sed -i 's/{{DB_TYPE}}/'"${DB_TYPE}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
     exec_as_owncloud sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
     exec_as_owncloud sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
@@ -201,7 +217,7 @@ owncloud_configure_max_file_uploads() {
 nginx_configure_virtualhost() {
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]]; then
     echo "Installing virtualhost configuration..."
-    cp ${OWNCLOUD_TEMPLATES_DIR}/nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
+    install_template root nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf 0644
     sed -i 's,{{OWNCLOUD_FQDN}},'"${OWNCLOUD_FQDN}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
     sed -i 's,{{OWNCLOUD_INSTALL_DIR}},'"${OWNCLOUD_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
   fi
