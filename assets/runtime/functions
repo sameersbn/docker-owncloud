@@ -35,6 +35,34 @@ install_template() {
   chmod ${MODE} ${DEST}
 }
 
+## Replace placeholders with values
+# $1: file with placeholders to replace
+# $x: placeholders to replace
+update_template() {
+  local FILE=${1?missing argument}
+  shift
+
+  [[ ! -f ${FILE} ]] && return 1
+
+  local VARIABLES=($@)
+  local USR=$(stat -c %U ${FILE})
+  local tmp_file=$(mktemp)
+  cp -a "${FILE}" ${tmp_file}
+
+  local variable
+  for variable in ${VARIABLES[@]}; do
+    # Keep the compatibilty: {{VAR}} => ${VAR}
+    sed -ri "s/[{]{2}$variable[}]{2}/\${$variable}/g" ${tmp_file}
+  done
+
+  # Replace placeholders
+  (
+    export ${VARIABLES[@]}
+    local IFS=":"; sudo -HEu ${USR} envsubst "${VARIABLES[*]/#/$}" < ${tmp_file} > ${FILE}
+  )
+  rm -f ${tmp_file}
+}
+
 owncloud_set_param() {
   local key=${1}
   local value=${2}
@@ -159,13 +187,14 @@ owncloud_configure_database() {
   if [[ ! -f ${OWNCLOUD_CONFIG_PHP} ]]; then
     # firstrun, install autoconfig.php
     install_template ${OWNCLOUD_USER} owncloud/autoconfig.php ${OWNCLOUD_AUTOCONFIG_PHP} 0644
-    exec_as_owncloud sed -i 's/{{DB_TYPE}}/'"${DB_TYPE}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
-    exec_as_owncloud sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
-    exec_as_owncloud sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
-    exec_as_owncloud sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
-    exec_as_owncloud sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
-    exec_as_owncloud sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
-    exec_as_owncloud sed -i 's,{{OWNCLOUD_OCDATA_DIR}},'"${OWNCLOUD_OCDATA_DIR}"',' ${OWNCLOUD_AUTOCONFIG_PHP}
+    update_template ${OWNCLOUD_AUTOCONFIG_PHP} \
+      DB_TYPE \
+      DB_HOST \
+      DB_PORT \
+      DB_NAME \
+      DB_USER \
+      DB_PASS \
+      OWNCLOUD_OCDATA_DIR
   else
     owncloud_set_param dbtype ${DB_TYPE}
     owncloud_set_param dbhost ${DB_HOST}:${DB_PORT}
@@ -218,8 +247,9 @@ nginx_configure_virtualhost() {
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]]; then
     echo "Installing virtualhost configuration..."
     install_template root nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf 0644
-    sed -i 's,{{OWNCLOUD_FQDN}},'"${OWNCLOUD_FQDN}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
-    sed -i 's,{{OWNCLOUD_INSTALL_DIR}},'"${OWNCLOUD_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf
+    update_template /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf \
+      OWNCLOUD_INSTALL_DIR \
+      OWNCLOUD_FQDN
   fi
 }
 

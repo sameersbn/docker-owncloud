@@ -19,7 +19,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F7
       php5-pgsql php5-mysql php5-gd php-file \
       php5-curl php5-intl php5-mcrypt php5-ldap \
       php-net-ftp php5-gmp php5-apcu php5-imagick \
-      mysql-client postgresql-client nginx \
+      mysql-client postgresql-client nginx gettext-base \
  && php5enmod mcrypt \
  && rm -rf /var/lib/apt/lists/*
 
