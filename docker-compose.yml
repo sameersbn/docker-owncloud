@@ -9,6 +9,7 @@ postgresql:
 
 owncloud:
   image: sameersbn/owncloud:latest
+  command: app:owncloud
   environment:
     - DEBUG=false
     - OWNCLOUD_FQDN=cloud.example.com
@@ -18,15 +19,11 @@ owncloud:
     - postgresql:postgresql
   volumes:
     - /srv/docker/owncloud/owncloud:/var/lib/owncloud
-    - /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled
 
 nginx:
-  image: sameersbn/nginx
+  image: sameersbn/owncloud:latest
+  command: app:nginx
   links:
     - owncloud:owncloud-php-fpm
-  volumes:
-    - /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled
-  volumes_from:
-    - owncloud
   ports:
     - "80:80"

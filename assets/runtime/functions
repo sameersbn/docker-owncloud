@@ -211,5 +211,6 @@ configure_owncloud() {
 }
 
 configure_nginx() {
+  echo "Configuring nginx..."
   nginx_configure_virtualhost
 }
