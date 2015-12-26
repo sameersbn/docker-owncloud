@@ -18,6 +18,23 @@ occ() {
   exec_as_owncloud php occ $@
 }
 
+owncloud_set_param() {
+  local key=${1}
+  local value=${2}
+  local hide=${3}
+  if [[ -n ${value} ]]; then
+    local current=$(exec_as_owncloud sed -n -e "s/\([ ]*\)\('${key}' => '\)\([^ ']*\)\(.*\)$/\3/p" ${OWNCLOUD_CONFIG_PHP})
+    if [[ "${current}" != "${value}" ]]; then
+      case ${hide} in
+        true)  echo "‣ Setting config.php parameter: ${key}" ;;
+        *) echo "‣ Setting config.php parameter: ${key} = '${value}'" ;;
+      esac
+      value="$(echo "${value}" | sed 's|[&]|\\&|g')"
+      exec_as_owncloud sed -i "s|'${key}' => .*|'${key}' => '${value}',|" ${OWNCLOUD_CONFIG_PHP}
+    fi
+  fi
+}
+
 owncloud_finalize_database_parameters() {
   # is a mysql or postgresql database linked?
   # requires that the mysql or postgresql containers have exposed
@@ -132,6 +149,12 @@ owncloud_configure_database() {
     exec_as_owncloud sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
     exec_as_owncloud sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
     exec_as_owncloud sed -i 's,{{OWNCLOUD_OCDATA_DIR}},'"${OWNCLOUD_OCDATA_DIR}"',' ${OWNCLOUD_AUTOCONFIG_PHP}
+  else
+    owncloud_set_param dbtype ${DB_TYPE}
+    owncloud_set_param dbhost ${DB_HOST}:${DB_PORT}
+    owncloud_set_param dbname ${DB_NAME}
+    owncloud_set_param dbuser ${DB_USER}
+    owncloud_set_param dbpassword ${DB_PASS} true
   fi
 }
 
