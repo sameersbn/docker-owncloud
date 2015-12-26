@@ -3,13 +3,12 @@
 **EXPERIMENTAL: Please do not use in production**
 
 - [Introduction](#introduction)
-- [Dedicated php-fpm workers](#dedicated-php-fpm-workers)
-- [Shared php-fpm workers](#shared-php-fpm-workers)
+- [Quicktart](#quickstart)
 - [Final Steps](#final-steps)
 
 # Introduction
 
-This is an experimental image intended for learning/demonstration of docker volumes. This is more of a proof of concept image and not intended to be used in production at this time.
+This is an experimental image. This is more of a proof of concept image and not intended to be used in production at this time.
 
 Before we get into the nitty-gritties, lets take care of a few questions you may have.
 
@@ -26,111 +25,52 @@ Since this is a study exercise at the moment the image will change significantly
 *What does not work?*
 
 - You *cannot* install external plugins
-- SSL support is not enabled, you need to do it manually and on your own
-- File upload size is limited to `2G`
+- SSL support is not enabled, you need to configure SSL termination at the load-balancer.
 
-You can launch this image in two ways
-  - Dedicated php-fpm workers
-  - Shared php-fpm workers
+# Quickstart
 
-# Dedicated php-fpm workers
-
-In this mode, we start php-fpm workers specifically for owncloud. These cannot be shared for use with by other php applications.
+The quickest way to get started is using [docker-compose](https://docs.docker.com/compose/).
 
 ```bash
-# create postgresql container
-docker run -d --name=postgresql \
-  --env 'DB_USER=owncloud' \
-  --env 'DB_PASS=password' --env 'DB_NAME=owncloud_db' \
-  --volume /srv/docker/owncloud/postgresql:/var/lib/postgresql \
-  sameersbn/postgresql:latest
+wget https://raw.githubusercontent.com/sameersbn/docker-owncloud/master/docker-compose.yml
 ```
 
-Will create a postgresql container and a user and schema for the owncloud installation. This container can be used as a regular postgresql server for other applications if desired. It is not tied owncloud.
+Edit `docker-compose.yml` and update `OWNCLOUD_FQDN` with your domain name.
+
+Start ownCloud using:
 
 ```bash
-# create data-only container with ownCloud source
-docker run -d --name=owncloud \
-  --env OWNCLOUD_FQDN=cloud.example.com \
-  --link postgresql:postgresql \
-  --volume /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled \
+docker-compose up
+```
+
+Alternatively, you can manually launch the `owncloud` container and the supporting `postgresql` and `nginx` services by following this three step guide.
+
+Step 1. Launch a postgresql container
+
+```bash
+docker run --name owncloud-postgresql -itd --restart=always  \
+  --env 'DB_NAME=owncloud_db' \
+  --env 'DB_USER=owncloud' --env 'DB_PASS=password' \
+  --volume /srv/docker/owncloud/postgresql:/var/lib/postgresql \
+  sameersbn/postgresql:9.4-11
+```
+
+Step 2. Launch the owncloud service
+
+```bash
+docker run --name=owncloud -itd --restart=always  \
+  --env OWNCLOUD_FQDN=cloud.damagehead.com \
+  --link owncloud-postgresql:postgresql \
   --volume /srv/docker/owncloud/owncloud:/var/lib/owncloud \
-  sameersbn/owncloud:latest
+  sameersbn/owncloud:latest app:owncloud
 ```
 
-Will create the owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx in the volume mounted at `/etc/nginx/sites-enabled`. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `${OWNCLOUD_FQDN}.conf` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/var/lib/owncloud`.
+Step 3. Launch the nginx service
 
 ```bash
-# create nginx container
-docker run -d --name=nginx \
-  --publish 80:80 \
+docker run --name=owncloud-nginx -itd --restart=always  -p 10080:80 \
   --link owncloud:owncloud-php-fpm \
-  --volume /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled \
-  --volumes-from owncloud \
-  sameersbn/nginx:latest
+  sameersbn/owncloud:latest app:nginx
 ```
 
-Will create a `nginx` container and listen on host port `80`. If port `80` is already in use, then you can change the host port in the above command. The owncloud virtual host configuration will already be available in the volume mounted at `/etc/nginx/sites-enabled` volume as it will be installed by the `owncloud` container in the previous command. The `owncloud` volume import will make the owncloud source available to the nginx container, thereby allowing it to handle requests to static site assets. This `nginx` container can be used for hosting other applications or act as a load balancer and can be treated as a generic `nginx` container just like the `postgresql` container.
-
-All of the above setup can be achived using `docker-compose.yml` file present in this repository. Make sure you update the `OWNCLOUD_FQDN` in the `docker-compose.yml` file before starting it up
-
-The `postgresql`, and `nginx` containers are not specific to the owncloud installation and can be re-used with other applications as well.
-
-# Shared php-fpm workers
-
-In this mode, we start a separate php-fpm container that is not specific to use by the owncloud container. This php-fpm container can be used by other php applications as well.
-
-```bash
-# create postgresql container
-docker run -d --name=postgresql \
-  --env 'DB_USER=owncloud' \
-  --env 'DB_PASS=password' --env 'DB_NAME=owncloud_db' \
-  --volume /srv/docker/owncloud/postgresql:/var/lib/postgresql \
-  sameersbn/postgresql:latest
-```
-
-Will create a postgresql container and a user and schema for the owncloud installation. This container can be used as a regular postgresql server for other applications if desired. It is not tied owncloud.
-
-```bash
-# create data-only container with ownCloud source
-docker run -d --name=owncloud \
-  --env OWNCLOUD_FQDN=cloud.example.com \
-  --link postgresql:postgresql \
-  --volume /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled \
-  --volume /srv/docker/owncloud/owncloud:/var/lib/owncloud
-  sameersbn/owncloud:latest \
-  echo "Data-only container with owncloud source"
-```
-
-Will create a data-only owncloud container exposing the owncloud source. The container will also install a virtual host configuration for nginx in the volume mounted at `/etc/nginx/sites-enabled`. The `OWNCLOUD_FQDN` variable is used to configure the `server_name` variable in the virtual host configuration. If a configuration with the name `${OWNCLOUD_FQDN}.conf` already exists it will not be overwritten. Owncloud data will be stored in the volume mounted at `/var/lib/owncloud`.
-
-```bash
-# create php-fpm container
-docker run -d --name=phpFpm \
-  --link postgresql:postgresql \
-  --volumes-from owncloud \
-  sameersbn/php5-fpm:latest
-```
-
-Will create a `php-fpm` container for use with owncloud. As with the case of the `postgresql` container, it can be used as a regular `php-fpm` server for other applications if desired. The link to `postgresql` allows us to use the hostname `postgresql` while specifying the database connection parameters in the owncloud setup. The `owncloud` volume import makes the owncloud source available to the `phpFpm` container.
-
-```bash
-# create nginx container
-docker run -d --name=nginx \
-  --publish 80:80 \
-  --link phpFpm:owncloud-php-fpm \
-  --volume /srv/docker/owncloud/nginx/sites-enabled:/etc/nginx/sites-enabled \
-  --volumes-from owncloud \
-  sameersbn/nginx:latest
-```
-
-Will create a `nginx` container and listen on host port `80`. If port `80` is already in use, then you can change the host port in the above command. The owncloud virtual host configuration will already be available in the volume mounted at `/etc/nginx/sites-enabled` as it will be installed by the `owncloud` container in the previous command. The `owncloud-php-fpm` link alias will allow the nginx container to address the `phpFpm` container using the `owncloud-php-fpm` hostname. The `owncloud` volume import will make the owncloud source available to the nginx container, thereby allowing it to handle requests to static site assets. The `nginx` container can be used for hosting other applications or act as a load balancer and can be treated as a generic `nginx` container just like the `postgresql` and `php-fpm` containers.
-
-All of the above setup can be achived using `docker-compose-shared-workers.yml` file present in this repository. Make sure you update the `OWNCLOUD_FQDN` in the `docker-compose-shared-workers.yml` file before starting it up
-
-# Final Step
-
-Once all the containers have been started, access your owncloud installation at `http://localhost` or `http://owncloud.example.com`. On first run, owncloud will ask you to create an admin user.
-
-The `postgresql`, `php-fpm` and `nginx` containers are not specific to the owncloud installation and can be re-used with other applications as well.
-
+Point your browser to `http://cloud.example.com:10080` and complete the setup by creating a user.
