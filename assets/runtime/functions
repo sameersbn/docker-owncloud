@@ -2,6 +2,7 @@
 set -e
 source ${OWNCLOUD_RUNTIME_DIR}/env-defaults
 
+OWNCLOUD_CONFIG_PHP=${OWNCLOUD_CONF_DIR}/config.php
 OWNCLOUD_AUTOCONFIG_PHP=${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
 
 ## Execute a command as OWNCLOUD_USER
@@ -121,7 +122,7 @@ owncloud_configure_database() {
   owncloud_finalize_database_parameters
   owncloud_check_database_connection
 
-  if [[ ! -f ${OWNCLOUD_CONF_DIR}/config.php ]]; then
+  if [[ ! -f ${OWNCLOUD_CONFIG_PHP} ]]; then
     # firstrun, install autoconfig.php
     exec_as_owncloud cp ${OWNCLOUD_RUNTIME_DIR}/config/owncloud/autoconfig.php ${OWNCLOUD_AUTOCONFIG_PHP}
     exec_as_owncloud sed -i 's/{{DB_TYPE}}/'"${DB_TYPE}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
