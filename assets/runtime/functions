@@ -185,16 +185,13 @@ owncloud_configure_database() {
   owncloud_check_database_connection
 
   if [[ ! -f ${OWNCLOUD_CONFIG_PHP} ]]; then
-    # firstrun, install autoconfig.php
-    install_template ${OWNCLOUD_USER} owncloud/autoconfig.php ${OWNCLOUD_AUTOCONFIG_PHP} 0644
     update_template ${OWNCLOUD_AUTOCONFIG_PHP} \
       DB_TYPE \
       DB_HOST \
       DB_PORT \
       DB_NAME \
       DB_USER \
-      DB_PASS \
-      OWNCLOUD_OCDATA_DIR
+      DB_PASS
   else
     owncloud_set_param dbtype ${DB_TYPE}
     owncloud_set_param dbhost ${DB_HOST}:${DB_PORT}
@@ -244,12 +241,21 @@ owncloud_configure_max_file_uploads() {
 }
 
 nginx_configure_virtualhost() {
+  echo "Configuring ownCloud virtualhost..."
+  update_template /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf OWNCLOUD_FQDN
+}
+
+install_configuration_templates() {
+  echo "Installing configuration templates..."
+  # on firstrun, install autoconfig.php
+  if [[ ! -f ${OWNCLOUD_CONFIG_PHP} ]]; then
+    install_template ${OWNCLOUD_USER} owncloud/autoconfig.php ${OWNCLOUD_AUTOCONFIG_PHP} 0644
+    update_template ${OWNCLOUD_AUTOCONFIG_PHP} OWNCLOUD_OCDATA_DIR
+  fi
+
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]]; then
-    echo "Installing virtualhost configuration..."
     install_template root nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf 0644
-    update_template /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf \
-      OWNCLOUD_INSTALL_DIR \
-      OWNCLOUD_FQDN
+    update_template /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf OWNCLOUD_INSTALL_DIR
   fi
 }
 
@@ -269,6 +275,7 @@ initialize_datadir() {
 
 initialize_system() {
   initialize_datadir
+  install_configuration_templates
 }
 
 configure_owncloud() {
