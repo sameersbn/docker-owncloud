@@ -2,6 +2,8 @@
 set -e
 source ${OWNCLOUD_RUNTIME_DIR}/env-defaults
 
+OWNCLOUD_AUTOCONFIG_PHP=${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+
 ## Execute a command as OWNCLOUD_USER
 exec_as_owncloud() {
   if [[ $(whoami) == ${OWNCLOUD_USER} ]]; then
@@ -120,19 +122,15 @@ owncloud_configure_database() {
   owncloud_check_database_connection
 
   if [[ ! -f ${OWNCLOUD_CONF_DIR}/config.php ]]; then
-    # copy configuration template
-    exec_as_owncloud cp ${OWNCLOUD_RUNTIME_DIR}/config/owncloud/autoconfig.php ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-
-    # configure database connection
-    exec_as_owncloud sed -i 's/{{DB_TYPE}}/'"${DB_TYPE}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-    exec_as_owncloud sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-    exec_as_owncloud sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-    exec_as_owncloud sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-    exec_as_owncloud sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-    exec_as_owncloud sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
-
-    # configure owncloud data directory
-    exec_as_owncloud sed -i 's,{{OWNCLOUD_OCDATA_DIR}},'"${OWNCLOUD_OCDATA_DIR}"',' ${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
+    # firstrun, install autoconfig.php
+    exec_as_owncloud cp ${OWNCLOUD_RUNTIME_DIR}/config/owncloud/autoconfig.php ${OWNCLOUD_AUTOCONFIG_PHP}
+    exec_as_owncloud sed -i 's/{{DB_TYPE}}/'"${DB_TYPE}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
+    exec_as_owncloud sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
+    exec_as_owncloud sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
+    exec_as_owncloud sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
+    exec_as_owncloud sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
+    exec_as_owncloud sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${OWNCLOUD_AUTOCONFIG_PHP}
+    exec_as_owncloud sed -i 's,{{OWNCLOUD_OCDATA_DIR}},'"${OWNCLOUD_OCDATA_DIR}"',' ${OWNCLOUD_AUTOCONFIG_PHP}
   fi
 }
 
