@@ -81,8 +81,8 @@ owncloud_get_param() {
 }
 
 owncloud_set_param() {
-  local key=${1}
-  local value=${2}
+  local key=${1?missing argument}
+  local value=${2?missing argument}
   local hide=${3}
   if [[ -n ${value} ]]; then
     local current=$(owncloud_get_param ${key})
