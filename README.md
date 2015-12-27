@@ -35,7 +35,7 @@ The quickest way to get started is using [docker-compose](https://docs.docker.co
 wget https://raw.githubusercontent.com/sameersbn/docker-owncloud/master/docker-compose.yml
 ```
 
-Edit `docker-compose.yml` and update `OWNCLOUD_FQDN` with your domain name.
+Edit `docker-compose.yml` and update `OWNCLOUD_URL` with the url from which ownCloud will be externally accessible.
 
 Start ownCloud using:
 
@@ -48,7 +48,7 @@ Alternatively, you can manually launch the `owncloud` container and the supporti
 Step 1. Launch a postgresql container
 
 ```bash
-docker run --name owncloud-postgresql -itd --restart=always  \
+docker run --name owncloud-postgresql -itd --restart=always \
   --env 'DB_NAME=owncloud_db' \
   --env 'DB_USER=owncloud' --env 'DB_PASS=password' \
   --volume /srv/docker/owncloud/postgresql:/var/lib/postgresql \
@@ -58,17 +58,17 @@ docker run --name owncloud-postgresql -itd --restart=always  \
 Step 2. Launch the owncloud service
 
 ```bash
-docker run --name=owncloud -itd --restart=always  \
-  --env OWNCLOUD_FQDN=cloud.damagehead.com \
+docker run --name=owncloud -itd --restart=always \
+  --env OWNCLOUD_URL=http://cloud.damagehead.com:10080 \
   --link owncloud-postgresql:postgresql \
   --volume /srv/docker/owncloud/owncloud:/var/lib/owncloud \
   sameersbn/owncloud:latest app:owncloud
 ```
 
-Step 3. Launch the nginx service
+Step 3. Launch the nginx frontend
 
 ```bash
-docker run --name=owncloud-nginx -itd --restart=always  -p 10080:80 \
+docker run --name=owncloud-nginx -itd --restart=always -p 10080:80 \
   --link owncloud:owncloud-php-fpm \
   sameersbn/owncloud:latest app:nginx
 ```
