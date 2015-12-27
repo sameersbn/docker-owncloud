@@ -7,4 +7,6 @@ $AUTOCONFIG = array(
   "dbpass"        => "{{DB_PASS}}",
   "dbtableprefix" => "",
   "directory"     => "{{OWNCLOUD_OCDATA_DIR}}",
+  "adminlogin"    => "admin",
+  "adminpass"     => "password",
 );
