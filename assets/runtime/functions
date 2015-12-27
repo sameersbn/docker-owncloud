@@ -18,6 +18,24 @@ vercmp() {
        '(' "$1.0.0.0" : '[^.]*[.][^.]*[.][^.]*[.]\([^.]*\)' ')' '-' '(' "$2.0.0.0" : '[^.]*[.][^.]*[.][^.]*[.]\([^.]*\)' ')'
 }
 
+# Read YAML file from Bash script
+# Credits: https://gist.github.com/pkuczynski/8665367
+parse_yaml() {
+   local prefix=$2
+   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+   sed -ne "s|^\($s\)\($w\)$s:$s\"\(.*\)\"$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p" $1 |
+   awk -F$fs '{
+      indent = length($1)/2;
+      vname[indent] = $2;
+      for (i in vname) {if (i > indent) {delete vname[i]}}
+      if (length($3) > 0) {
+         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+      }
+   }'
+}
+
 ## Execute a command as OWNCLOUD_USER
 exec_as_owncloud() {
   if [[ $(whoami) == ${OWNCLOUD_USER} ]]; then
@@ -337,6 +355,89 @@ backup_create_archive() {
   done
 }
 
+backup_restore_unpack() {
+  local backup=${1}
+  if [[ ! -f ${OWNCLOUD_BACKUPS_DIR}/${backup} ]]; then
+    echo "Specified backup does not exist. Aborting..."
+    return 1
+  fi
+
+  echo "Unpacking ${backup}..."
+  tar xf ${OWNCLOUD_BACKUPS_DIR}/${backup} -C ${OWNCLOUD_BACKUPS_DIR}
+}
+
+backup_restore_validate() {
+  eval $(parse_yaml ${OWNCLOUD_BACKUPS_DIR}/backup_information.yml backup_)
+
+  ## version check
+  owncloud_finalize_database_parameters
+  if [[ $(vercmp ${OWNCLOUD_VERSION} ${backup_info_owncloud_version}) -lt 0 ]]; then
+    echo
+    echo "ERROR: "
+    echo "  Cannot restore backup for version ${backup_info_owncloud_version} on a ${OWNCLOUD_VERSION} instance."
+    echo "  You can only restore backups generated for versions <= ${OWNCLOUD_VERSION}."
+    echo "  Please use sameersbn/owncloud:${backup_info_owncloud_version} to restore this backup."
+    echo "  Cannot continue. Aborting!"
+    echo
+    return 1
+  fi
+
+  ## database adapter check
+  if [[ ${DB_TYPE} != ${backup_info_database_adapter} ]]; then
+    echo
+    echo "ERROR:"
+    echo "  Your current setup uses the ${DB_TYPE} adapter, while the database"
+    echo "  backup was generated with the ${backup_info_database_adapter} adapter."
+    echo "  Cannot continue. Aborting!"
+    echo
+    return 1
+  fi
+  exec_as_owncloud rm -rf ${OWNCLOUD_BACKUPS_DIR}/backup_information.yml
+}
+
+backup_restore_database() {
+  owncloud_finalize_database_parameters
+  case ${DB_TYPE} in
+    pgsql)
+      echo -n "Restoring PostgreSQL database..."
+      owncloud_check_database_connection
+      gzip -dc ${OWNCLOUD_BACKUPS_DIR}/database.sql.gz | \
+        PGPASSWORD=${DB_PASS} psql \
+          --host ${DB_HOST} --port ${DB_PORT} \
+          --username ${DB_USER} ${DB_NAME}
+      ;;
+    mysql)
+      echo -n "Restoring MySQL database..."
+      owncloud_check_database_connection
+      gzip -dc ${OWNCLOUD_BACKUPS_DIR}/database.sql.gz | \
+        MYSQL_PWD=${DB_PASS} mysql \
+          --host ${DB_HOST} --port ${DB_PORT} \
+          --user ${DB_USER} ${DB_NAME}
+      ;;
+    *)
+      echo "Database type ${DB_TYPE} not supported."
+      return 1
+      ;;
+  esac
+  exec_as_owncloud rm -rf ${OWNCLOUD_BACKUPS_DIR}/database.sql.gz
+}
+
+backup_restore_directory() {
+  local directory=${1}
+  local dirname=$(basename ${directory})
+
+  echo "Restoring ${dirname}..."
+  files=($(shopt -s nullglob;shopt -s dotglob;echo ${directory}/*))
+  if [[ ${#files[@]} -gt 0 ]]; then
+    exec_as_owncloud mv ${directory} ${directory}.$(date +%s)
+  else
+    exec_as_owncloud rm -rf ${directory}
+  fi
+  exec_as_owncloud mkdir -p ${directory}
+  exec_as_owncloud tar xf ${OWNCLOUD_BACKUPS_DIR}/${dirname}.tar.gz -C ${directory}
+  exec_as_owncloud rm -rf ${OWNCLOUD_BACKUPS_DIR}/${dirname}.tar.gz
+}
+
 install_configuration_templates() {
   echo "Installing configuration templates..."
   # on firstrun, install autoconfig.php
@@ -400,4 +501,41 @@ backup_create() {
   backup_dump_directory ${OWNCLOUD_OCDATA_DIR}
   backup_dump_information
   backup_create_archive backup_information.yml database.sql.gz config.tar.gz ocdata.tar.gz
+}
+
+backup_restore() {
+  local tar_file=
+  local interactive=true
+  for arg in $@
+  do
+    if [[ $arg == BACKUP=* ]]; then
+      tar_file=${arg##BACKUP=}
+      interactive=false
+      break
+    fi
+  done
+
+  # user needs to select the backup to restore
+  if [[ $interactive == true ]]; then
+    num_backups=$(ls ${OWNCLOUD_BACKUPS_DIR}/*_owncloud_backup.tar | wc -l)
+    if [[ $num_backups -eq 0 ]]; then
+      echo "No backups exist at ${OWNCLOUD_BACKUPS_DIR}. Cannot continue."
+      return 1
+    fi
+
+    echo
+    for b in $(ls ${OWNCLOUD_BACKUPS_DIR} | grep owncloud_backup.tar | sort -r)
+    do
+      echo "‣ $b"
+    done
+    echo
+
+    read -p "Select a backup to restore: " tar_file
+  fi
+
+  backup_restore_unpack ${tar_file}
+  backup_restore_validate
+  backup_restore_database
+  backup_restore_directory ${OWNCLOUD_CONFIG_DIR}
+  backup_restore_directory ${OWNCLOUD_OCDATA_DIR}
 }
