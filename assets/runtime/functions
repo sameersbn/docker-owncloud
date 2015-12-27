@@ -305,6 +305,9 @@ initialize_datadir() {
   mkdir -p ${OWNCLOUD_CONFIG_DIR}
   chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_CONFIG_DIR}
   chmod -R 0750 ${OWNCLOUD_CONFIG_DIR}
+
+  # symlink to config/config.php -> ${OWNCLOUD_CONFIG_DIR}/config.php
+  ln -sf ${OWNCLOUD_CONFIG_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
 }
 
 initialize_system() {
