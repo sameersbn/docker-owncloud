@@ -215,7 +215,7 @@ owncloud_configure_database() {
 
 owncloud_upgrade() {
   CACHE_VERSION=
-  [[ -f ${OWNCLOUD_DATA_DIR}/VERSION ]] && CACHE_VERSION=$(cat ${OWNCLOUD_DATA_DIR}/VERSION)
+  [[ -f ${OWNCLOUD_CONFIG_DIR}/VERSION ]] && CACHE_VERSION=$(cat ${OWNCLOUD_CONFIG_DIR}/VERSION)
   if [[ ${OWNCLOUD_VERSION} != ${CACHE_VERSION} ]]; then
 
     ## version check, only upgrades are allowed
@@ -247,7 +247,7 @@ owncloud_upgrade() {
       occ upgrade
       occ maintenance:mode --off
     fi
-    echo -n "${OWNCLOUD_VERSION}" | exec_as_owncloud tee ${OWNCLOUD_DATA_DIR}/VERSION >/dev/null
+    echo -n "${OWNCLOUD_VERSION}" | exec_as_owncloud tee ${OWNCLOUD_CONFIG_DIR}/VERSION >/dev/null
   fi
 }
 
