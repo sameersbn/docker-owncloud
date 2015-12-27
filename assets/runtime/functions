@@ -3,7 +3,7 @@ set -e
 source ${OWNCLOUD_RUNTIME_DIR}/env-defaults
 
 OWNCLOUD_TEMPLATES_DIR=${OWNCLOUD_RUNTIME_DIR}/config
-OWNCLOUD_CONFIG_PHP=${OWNCLOUD_CONF_DIR}/config.php
+OWNCLOUD_CONFIG_PHP=${OWNCLOUD_CONFIG_DIR}/config.php
 OWNCLOUD_AUTOCONFIG_PHP=${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
 
 # Compares two version strings `a` and `b`
@@ -292,9 +292,9 @@ initialize_datadir() {
   chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_OCDATA_DIR}
   chmod -R 0750 ${OWNCLOUD_OCDATA_DIR}
 
-  mkdir -p ${OWNCLOUD_CONF_DIR}
-  chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_CONF_DIR}
-  chmod -R 0750 ${OWNCLOUD_CONF_DIR}
+  mkdir -p ${OWNCLOUD_CONFIG_DIR}
+  chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_CONFIG_DIR}
+  chmod -R 0750 ${OWNCLOUD_CONFIG_DIR}
 }
 
 initialize_system() {
