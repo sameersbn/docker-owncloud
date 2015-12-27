@@ -203,7 +203,9 @@ owncloud_configure_database() {
       DB_PORT \
       DB_NAME \
       DB_USER \
-      DB_PASS
+      DB_PASS \
+      OWNCLOUD_ADMIN_USER \
+      OWNCLOUD_ADMIN_PASSWORD
   else
     owncloud_set_param dbtype ${DB_TYPE}
     owncloud_set_param dbhost ${DB_HOST}:${DB_PORT}
