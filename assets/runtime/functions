@@ -251,6 +251,14 @@ owncloud_upgrade() {
   fi
 }
 
+owncloud_configure_domain() {
+  echo "Configuring ownCloud::trusted_domain..."
+  if [[ -f ${OWNCLOUD_CONFIG_PHP} ]]; then
+    owncloud_set_param overwrite.cli.url ${OWNCLOUD_URL}
+    sed -i "s|0 => '.*',|0 => '${OWNCLOUD_FQDN}',|" ${OWNCLOUD_CONFIG_PHP}
+  fi
+}
+
 owncloud_configure_max_upload_size() {
   echo "Configuring ownCloud::max_upload_size..."
   (
@@ -306,6 +314,7 @@ configure_owncloud() {
   echo "Configuring ownCloud..."
   owncloud_configure_database
   owncloud_upgrade
+  owncloud_configure_domain
   owncloud_configure_max_upload_size
   owncloud_configure_max_file_uploads
 }
