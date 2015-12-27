@@ -75,12 +75,17 @@ update_template() {
   rm -f ${tmp_file}
 }
 
+owncloud_get_param() {
+  local key=${1?missing argument}
+  exec_as_owncloud sed -n -e "s/\([ ]*\)\('${key}' => '\)\([^ ']*\)\(.*\)$/\3/p" ${OWNCLOUD_CONFIG_PHP}
+}
+
 owncloud_set_param() {
   local key=${1}
   local value=${2}
   local hide=${3}
   if [[ -n ${value} ]]; then
-    local current=$(exec_as_owncloud sed -n -e "s/\([ ]*\)\('${key}' => '\)\([^ ']*\)\(.*\)$/\3/p" ${OWNCLOUD_CONFIG_PHP})
+    local current=$(owncloud_get_param ${key})
     if [[ "${current}" != "${value}" ]]; then
       case ${hide} in
         true)  echo "‣ Setting config.php parameter: ${key}" ;;
