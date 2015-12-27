@@ -5,7 +5,7 @@ source ${OWNCLOUD_RUNTIME_DIR}/functions
 [[ $DEBUG == true ]] && set -x
 
 case ${1} in
-  app:owncloud|app:nginx|occ)
+  app:owncloud|app:nginx|app:backup:create|occ)
 
     initialize_system
 
@@ -20,6 +20,10 @@ case ${1} in
         echo "Starting nginx..."
         exec $(which nginx) -c /etc/nginx/nginx.conf -g "daemon off;"
         ;;
+      app:backup:create)
+        shift 1
+        backup_create
+        ;;
       occ)
         exec $@
         ;;
@@ -27,11 +31,12 @@ case ${1} in
     ;;
   app:help)
     echo "Available options:"
-    echo " app:owncloud   - Starts the ownCloud php5-fpm server (default)"
-    echo " app:nginx      - Starts the nginx server"
-    echo " occ            - Launch the ownCloud's command-line interface"
-    echo " app:help       - Displays the help"
-    echo " [command]      - Execute the specified command, eg. bash."
+    echo " occ                  - Launch the ownCloud's command-line interface"
+    echo " app:owncloud         - Starts the ownCloud php5-fpm server (default)"
+    echo " app:nginx            - Starts the nginx server"
+    echo " app:backup:create    - Create a backup"
+    echo " app:help             - Displays the help"
+    echo " [command]            - Execute the specified command, eg. bash."
     ;;
   *)
     exec "$@"

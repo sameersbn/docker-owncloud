@@ -284,6 +284,59 @@ nginx_configure_virtualhost() {
   update_template /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf OWNCLOUD_FQDN
 }
 
+backup_dump_database() {
+  owncloud_finalize_database_parameters
+  case ${DB_TYPE} in
+    pgsql)
+      echo -n "Dumping PostgreSQL database ${DB_NAME}"
+      owncloud_check_database_connection
+      exec_as_owncloud PGPASSWORD=${DB_PASS} pg_dump --clean \
+        --host ${DB_HOST} --port ${DB_PORT} \
+        --username ${DB_USER} ${DB_NAME} | \
+          gzip > ${OWNCLOUD_BACKUPS_DIR}/database.sql.gz
+      ;;
+    mysql)
+      echo -n "Dumping MySQL database ${DB_NAME}"
+      owncloud_check_database_connection
+      exec_as_owncloud MYSQL_PWD=${DB_PASS} mysqldump --lock-tables --add-drop-table \
+        --host ${DB_HOST} --port ${DB_PORT} \
+        --user ${DB_USER} ${DB_NAME} | \
+          gzip > ${OWNCLOUD_BACKUPS_DIR}/database.sql.gz
+      ;;
+  esac
+  chown ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_BACKUPS_DIR}/database.sql.gz
+}
+
+backup_dump_directory() {
+  local directory=${1}
+  local dirname=$(basename ${directory})
+
+  echo "Dumping ${dirname}..."
+  exec_as_owncloud tar -jcf ${OWNCLOUD_BACKUPS_DIR}/${dirname}.tar.gz -C ${directory} .
+}
+
+backup_dump_information() {
+  (
+    echo "info:"
+    echo "  owncloud_version: ${OWNCLOUD_VERSION}"
+    echo "  database_adapter: $(owncloud_get_param dbtype)"
+    echo "  created_at: $(date)"
+  ) > ${OWNCLOUD_BACKUPS_DIR}/backup_information.yml
+  chown ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_BACKUPS_DIR}/backup_information.yml
+}
+
+backup_create_archive() {
+  local tar_file="$(date +%s)_owncloud_backup.tar"
+
+  echo "Creating backup archive: ${tar_file}..."
+  exec_as_owncloud tar -cf ${OWNCLOUD_BACKUPS_DIR}/${tar_file} -C ${OWNCLOUD_BACKUPS_DIR} $@
+
+  for f in $@
+  do
+    exec_as_owncloud rm -rf ${OWNCLOUD_BACKUPS_DIR}/${f}
+  done
+}
+
 install_configuration_templates() {
   echo "Installing configuration templates..."
   # on firstrun, install autoconfig.php
@@ -303,13 +356,20 @@ initialize_datadir() {
   chmod 0755 ${OWNCLOUD_DATA_DIR}
   chown ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_DATA_DIR}
 
+  # create ocdata directory
   mkdir -p ${OWNCLOUD_OCDATA_DIR}
   chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_OCDATA_DIR}
   chmod -R 0750 ${OWNCLOUD_OCDATA_DIR}
 
+  # create config directory
   mkdir -p ${OWNCLOUD_CONFIG_DIR}
   chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_CONFIG_DIR}
   chmod -R 0750 ${OWNCLOUD_CONFIG_DIR}
+
+  # create backups directory
+  mkdir -p ${OWNCLOUD_BACKUPS_DIR}
+  chmod -R 0755 ${OWNCLOUD_BACKUPS_DIR}
+  chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_BACKUPS_DIR}
 
   # symlink to config/config.php -> ${OWNCLOUD_CONFIG_DIR}/config.php
   ln -sf ${OWNCLOUD_CONFIG_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
@@ -332,4 +392,12 @@ configure_owncloud() {
 configure_nginx() {
   echo "Configuring nginx..."
   nginx_configure_virtualhost
+}
+
+backup_create() {
+  backup_dump_database
+  backup_dump_directory ${OWNCLOUD_CONFIG_DIR}
+  backup_dump_directory ${OWNCLOUD_OCDATA_DIR}
+  backup_dump_information
+  backup_create_archive backup_information.yml database.sql.gz config.tar.gz ocdata.tar.gz
 }
