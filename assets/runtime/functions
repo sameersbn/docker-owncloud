@@ -347,6 +347,7 @@ backup_create_archive() {
 
   echo "Creating backup archive: ${tar_file}..."
   exec_as_owncloud tar -cf ${OWNCLOUD_BACKUPS_DIR}/${tar_file} -C ${OWNCLOUD_BACKUPS_DIR} $@
+  exec_as_owncloud chmod 0755 ${OWNCLOUD_BACKUPS_DIR}/${tar_file}
 
   for f in $@
   do
