@@ -498,9 +498,9 @@ configure_nginx() {
 backup_create() {
   backup_dump_database
   backup_dump_directory ${OWNCLOUD_CONFIG_DIR} .tar.gz
-  backup_dump_directory ${OWNCLOUD_OCDATA_DIR} .tar.gz
+  backup_dump_directory ${OWNCLOUD_OCDATA_DIR} .tar
   backup_dump_information
-  backup_create_archive backup_information.yml database.sql.gz config.tar.gz ocdata.tar.gz
+  backup_create_archive backup_information.yml database.sql.gz config.tar.gz ocdata.tar
 }
 
 backup_restore() {
@@ -537,5 +537,5 @@ backup_restore() {
   backup_restore_validate
   backup_restore_database
   backup_restore_directory ${OWNCLOUD_CONFIG_DIR} .tar.gz
-  backup_restore_directory ${OWNCLOUD_OCDATA_DIR} .tar.gz
+  backup_restore_directory ${OWNCLOUD_OCDATA_DIR} .tar
 }
