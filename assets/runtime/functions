@@ -375,11 +375,6 @@ backup_purge_expired() {
 
 backup_restore_unpack() {
   local backup=${1}
-  if [[ ! -f ${OWNCLOUD_BACKUPS_DIR}/${backup} ]]; then
-    echo "Specified backup does not exist. Aborting..."
-    return 1
-  fi
-
   echo "Unpacking ${backup}..."
   tar xf ${OWNCLOUD_BACKUPS_DIR}/${backup} -C ${OWNCLOUD_BACKUPS_DIR}
 }
@@ -551,6 +546,11 @@ backup_restore() {
     echo
 
     read -p "Select a backup to restore: " tar_file
+  fi
+
+  if [[ ! -f ${OWNCLOUD_BACKUPS_DIR}/${tar_file} ]]; then
+    echo "Specified backup does not exist. Aborting..."
+    return 1
   fi
 
   backup_restore_unpack ${tar_file}
