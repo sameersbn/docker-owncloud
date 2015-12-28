@@ -355,6 +355,24 @@ backup_create_archive() {
   done
 }
 
+backup_purge_expired() {
+  if [[ ${OWNCLOUD_BACKUPS_EXPIRY} -gt 0 ]]; then
+    echo -n "Deleting old backups... "
+    local removed=0
+    local now=$(date +%s)
+    local cutoff=$(expr ${now} - ${OWNCLOUD_BACKUPS_EXPIRY})
+    for backup in $(ls ${OWNCLOUD_BACKUPS_DIR}/*_owncloud_backup.tar)
+    do
+      local timestamp=$(stat -c %Y ${backup})
+      if [[ ${timestamp} -lt ${cutoff} ]]; then
+        rm ${backup}
+        removed=$(expr ${removed} + 1)
+      fi
+    done
+    echo "(${removed} removed)"
+  fi
+}
+
 backup_restore_unpack() {
   local backup=${1}
   if [[ ! -f ${OWNCLOUD_BACKUPS_DIR}/${backup} ]]; then
@@ -502,6 +520,7 @@ backup_create() {
   backup_dump_directory ${OWNCLOUD_OCDATA_DIR} .tar
   backup_dump_information
   backup_create_archive backup_information.yml database.sql.gz config.tar.gz ocdata.tar
+  backup_purge_expired
 }
 
 backup_restore() {

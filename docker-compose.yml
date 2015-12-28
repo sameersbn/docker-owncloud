@@ -17,6 +17,7 @@ owncloud:
     - OWNCLOUD_ADMIN_PASSWORD=
     - OWNCLOUD_UPLOAD_MAX_FILESIZE=4G
     - OWNCLOUD_MAX_FILE_UPLOADS=20
+    - OWNCLOUD_BACKUPS_EXPIRY=0
   links:
     - postgresql:postgresql
   volumes:
