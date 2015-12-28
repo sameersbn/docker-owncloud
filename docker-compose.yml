@@ -12,11 +12,16 @@ owncloud:
   command: app:owncloud
   environment:
     - DEBUG=false
+    - TZ=Asia/Kolkata
+
     - OWNCLOUD_URL=http://cloud.example.com:10080
+
     - OWNCLOUD_ADMIN_USER=
     - OWNCLOUD_ADMIN_PASSWORD=
+
     - OWNCLOUD_UPLOAD_MAX_FILESIZE=4G
     - OWNCLOUD_MAX_FILE_UPLOADS=20
+
     - OWNCLOUD_BACKUPS_EXPIRY=0
   links:
     - postgresql:postgresql
