@@ -110,6 +110,10 @@ Point your browser to `http://cloud.example.com:10080` and login using the defau
 * username: **admin**
 * password: **password**
 
+> **Note**
+>
+> Use the `OWNCLOUD_ADMIN_USER` and `OWNCLOUD_ADMIN_PASSWORD` variables to create a custom admin user and password on the firstrun instead of the default credentials.
+
 ## Persistence
 
 For ownCloud to preserve its state across container shutdown and startup you should mount a volume at `/var/lib/owncloud`.
