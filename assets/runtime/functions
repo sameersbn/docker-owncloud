@@ -510,12 +510,14 @@ configure_nginx() {
 }
 
 backup_create() {
+  occ maintenance:mode --on
   backup_dump_database
   backup_dump_directory ${OWNCLOUD_CONFIG_DIR} .tar.gz
   backup_dump_directory ${OWNCLOUD_OCDATA_DIR} .tar
   backup_dump_information
   backup_create_archive backup_information.yml database.sql.gz config.tar.gz ocdata.tar
   backup_purge_expired
+  occ maintenance:mode --off
 }
 
 backup_restore() {
