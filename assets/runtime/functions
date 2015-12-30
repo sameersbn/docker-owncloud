@@ -519,7 +519,9 @@ configure_owncloud() {
   owncloud_configure_max_upload_size
   owncloud_configure_max_file_uploads
 
-  occ_cli maintenance:mode --quiet --off
+  if [[ -f ${OWNCLOUD_CONFIG_PHP} ]]; then
+    occ_cli maintenance:mode --quiet --off
+  fi
 }
 
 configure_nginx() {
