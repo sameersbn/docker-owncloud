@@ -32,6 +32,6 @@ nginx:
   image: sameersbn/owncloud:latest
   command: app:nginx
   links:
-    - owncloud:owncloud-php-fpm
+    - owncloud:php-fpm
   ports:
     - "10080:80"

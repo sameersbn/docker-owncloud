@@ -188,6 +188,25 @@ owncloud_finalize_database_parameters() {
   DB_NAME=${DB_NAME:-ownclouddb}
 }
 
+owncloud_finalize_php_fpm_parameters() {
+  # is a owncloud-php-fpm container linked?
+  if [[ -n ${PHP_FPM_PORT_9000_TCP_ADDR} ]]; then
+    OWNCLOUD_PHP_FPM_HOST=${OWNCLOUD_PHP_FPM_HOST:-$PHP_FPM_PORT_9000_TCP_ADDR}
+    OWNCLOUD_PHP_FPM_PORT=${OWNCLOUD_PHP_FPM_PORT:-$PHP_FPM_PORT_9000_TCP_PORT}
+  fi
+
+  if [[ -z ${OWNCLOUD_PHP_FPM_HOST} ]]; then
+    echo
+    echo "ERROR: "
+    echo "  Please configure the php-fpm connection. Aborting..."
+    echo
+    return 1
+  fi
+
+  # use default php-fpm port number if it is still not set
+  OWNCLOUD_PHP_FPM_PORT=${OWNCLOUD_PHP_FPM_PORT:-9000}
+}
+
 owncloud_check_database_connection() {
   case ${DB_TYPE} in
     mysql)
@@ -299,7 +318,11 @@ owncloud_configure_max_file_uploads() {
 
 nginx_configure_virtualhost() {
   echo "Configuring ownCloud virtualhost..."
-  update_template /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf OWNCLOUD_FQDN
+  owncloud_finalize_php_fpm_parameters
+  update_template /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf \
+    OWNCLOUD_FQDN \
+    OWNCLOUD_PHP_FPM_HOST \
+    OWNCLOUD_PHP_FPM_PORT
 }
 
 backup_dump_database() {
