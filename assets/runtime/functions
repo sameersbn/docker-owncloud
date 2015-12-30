@@ -45,7 +45,7 @@ exec_as_owncloud() {
   fi
 }
 
-occ() {
+occ_cli() {
   exec_as_owncloud php occ $@
 }
 
@@ -268,9 +268,9 @@ owncloud_upgrade() {
     esac
     if [[ ${COUNT} -gt 0 ]]; then
       echo "Upgrading ownCloud..."
-      occ maintenance:mode --on
-      occ upgrade
-      occ maintenance:mode --off
+      occ_cli maintenance:mode --on
+      occ_cli upgrade
+      occ_cli maintenance:mode --off
     fi
     echo -n "${OWNCLOUD_VERSION}" | exec_as_owncloud tee ${OWNCLOUD_CONFIG_DIR}/VERSION >/dev/null
   fi
@@ -510,14 +510,14 @@ configure_nginx() {
 }
 
 backup_create() {
-  occ maintenance:mode --on
+  occ_cli maintenance:mode --on
   backup_dump_database
   backup_dump_directory ${OWNCLOUD_CONFIG_DIR} .tar.gz
   backup_dump_directory ${OWNCLOUD_OCDATA_DIR} .tar
   backup_dump_information
   backup_create_archive backup_information.yml database.sql.gz config.tar.gz ocdata.tar
   backup_purge_expired
-  occ maintenance:mode --off
+  occ_cli maintenance:mode --off
 }
 
 backup_restore() {

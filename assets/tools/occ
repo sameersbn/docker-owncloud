@@ -3,4 +3,4 @@ set -e
 source ${OWNCLOUD_RUNTIME_DIR}/functions
 
 cd ${OWNCLOUD_INSTALL_DIR}
-occ $@
+occ_cli $@
