@@ -495,6 +495,8 @@ configure_owncloud() {
   owncloud_configure_domain
   owncloud_configure_max_upload_size
   owncloud_configure_max_file_uploads
+
+  occ_cli maintenance:mode --quiet --off
 }
 
 configure_nginx() {
