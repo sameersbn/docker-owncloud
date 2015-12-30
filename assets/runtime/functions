@@ -4,7 +4,6 @@ source ${OWNCLOUD_RUNTIME_DIR}/env-defaults
 
 OWNCLOUD_TEMPLATES_DIR=${OWNCLOUD_RUNTIME_DIR}/config
 OWNCLOUD_CONFIG_PHP=${OWNCLOUD_CONFIG_DIR}/config.php
-OWNCLOUD_AUTOCONFIG_PHP=${OWNCLOUD_INSTALL_DIR}/config/autoconfig.php
 
 # Compares two version strings `a` and `b`
 # Returns
@@ -238,17 +237,7 @@ owncloud_configure_database() {
   owncloud_finalize_database_parameters
   owncloud_check_database_connection
 
-  if [[ ! -f ${OWNCLOUD_CONFIG_PHP} ]]; then
-    update_template ${OWNCLOUD_AUTOCONFIG_PHP} \
-      DB_TYPE \
-      DB_HOST \
-      DB_PORT \
-      DB_NAME \
-      DB_USER \
-      DB_PASS \
-      OWNCLOUD_ADMIN_USER \
-      OWNCLOUD_ADMIN_PASSWORD
-  else
+  if [[ -f ${OWNCLOUD_CONFIG_PHP} ]]; then
     owncloud_set_param dbtype ${DB_TYPE}
     owncloud_set_param dbhost ${DB_HOST}:${DB_PORT}
     owncloud_set_param dbname ${DB_NAME}
@@ -258,49 +247,64 @@ owncloud_configure_database() {
 }
 
 owncloud_upgrade() {
-  CACHE_VERSION=
-  [[ -f ${OWNCLOUD_CONFIG_DIR}/VERSION ]] && CACHE_VERSION=$(cat ${OWNCLOUD_CONFIG_DIR}/VERSION)
-  if [[ ${OWNCLOUD_VERSION} != ${CACHE_VERSION} ]]; then
+  # perform installation on firstrun
+  case ${DB_TYPE} in
+    mysql)
+      QUERY="SELECT count(*) FROM information_schema.tables WHERE table_schema = '${DB_NAME}';"
+      COUNT=$(mysql -h ${DB_HOST} -P ${DB_PORT} -u ${DB_USER} ${DB_PASS:+-p$DB_PASS} -ss -e "${QUERY}")
+      ;;
+    pgsql)
+      QUERY="SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public';"
+      COUNT=$(PGPASSWORD="${DB_PASS}" psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -Atw -c "${QUERY}")
+      ;;
+  esac
 
-    ## version check, only upgrades are allowed
-    if [[ -n ${CACHE_VERSION} && $(vercmp ${OWNCLOUD_VERSION} ${CACHE_VERSION}) -lt 0 ]]; then
-      echo
-      echo "ERROR: "
-      echo "  Cannot downgrade from ownCloud version ${CACHE_VERSION} to ${OWNCLOUD_VERSION}."
-      echo "  Only upgrades are allowed. Please use sameersbn/owncloud:${CACHE_VERSION} or higher."
-      echo "  Cannot continue. Aborting!"
-      echo
-      return 1
-    fi
+  local update_version=false
+  if [[ -z ${COUNT} || ${COUNT} -eq 0 ]]; then
+    echo "Setting up ownCloud for firstrun..."
+    mkdir -p ${OWNCLOUD_INSTALL_DIR}/data
+    chown -R www-data:www-data ${OWNCLOUD_INSTALL_DIR}/data
 
-    # upgrade can only be performed after the firstrun.
-    # we count the number of tables in the database if its the firstrun.
-    case ${DB_TYPE} in
-      mysql)
-        QUERY="SELECT count(*) FROM information_schema.tables WHERE table_schema = '${DB_NAME}';"
-        COUNT=$(mysql -h ${DB_HOST} -P ${DB_PORT} -u ${DB_USER} ${DB_PASS:+-p$DB_PASS} -ss -e "${QUERY}")
-        ;;
-      pgsql)
-        QUERY="SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public';"
-        COUNT=$(PGPASSWORD="${DB_PASS}" psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -Atw -c "${QUERY}")
-        ;;
-    esac
-    if [[ ${COUNT} -gt 0 ]]; then
+    occ_cli maintenance:install \
+      --database=${DB_TYPE} --database-host=${DB_HOST}:${DB_PORT} \
+      --database-name=${DB_NAME} --database-user=${DB_USER} --database-pass=${DB_PASS} \
+      --admin-user=${OWNCLOUD_ADMIN_USER} --admin-pass=${OWNCLOUD_ADMIN_PASSWORD} \
+      --data-dir=${OWNCLOUD_OCDATA_DIR} >/dev/null
+
+    update_version=true
+  else
+    CACHE_VERSION=
+    [[ -f ${OWNCLOUD_CONFIG_DIR}/VERSION ]] && CACHE_VERSION=$(cat ${OWNCLOUD_CONFIG_DIR}/VERSION)
+    if [[ ${OWNCLOUD_VERSION} != ${CACHE_VERSION} ]]; then
+      ## version check, only upgrades are allowed
+      if [[ -n ${CACHE_VERSION} && $(vercmp ${OWNCLOUD_VERSION} ${CACHE_VERSION}) -lt 0 ]]; then
+        echo
+        echo "ERROR: "
+        echo "  Cannot downgrade from ownCloud version ${CACHE_VERSION} to ${OWNCLOUD_VERSION}."
+        echo "  Only upgrades are allowed. Please use sameersbn/owncloud:${CACHE_VERSION} or higher."
+        echo "  Cannot continue. Aborting!"
+        echo
+        return 1
+      fi
+
       echo "Upgrading ownCloud..."
       occ_cli maintenance:mode --on
       occ_cli upgrade
       occ_cli maintenance:mode --off
+
+      update_version=true
     fi
+  fi
+
+  if [[ ${update_version} == true ]]; then
     echo -n "${OWNCLOUD_VERSION}" | exec_as_owncloud tee ${OWNCLOUD_CONFIG_DIR}/VERSION >/dev/null
   fi
 }
 
 owncloud_configure_domain() {
   echo "Configuring ownCloud::trusted_domain..."
-  if [[ -f ${OWNCLOUD_CONFIG_PHP} ]]; then
-    owncloud_set_param overwrite.cli.url ${OWNCLOUD_URL}
-    sed -i "s|0 => '.*',|0 => '${OWNCLOUD_FQDN}',|" ${OWNCLOUD_CONFIG_PHP}
-  fi
+  owncloud_set_param overwrite.cli.url ${OWNCLOUD_URL}
+  sed -i "s|0 => '.*',|0 => '${OWNCLOUD_FQDN}',|" ${OWNCLOUD_CONFIG_PHP}
 }
 
 owncloud_configure_max_upload_size() {
@@ -470,12 +474,6 @@ backup_restore_directory() {
 
 install_configuration_templates() {
   echo "Installing configuration templates..."
-  # on firstrun, install autoconfig.php
-  if [[ ! -f ${OWNCLOUD_CONFIG_PHP} ]]; then
-    install_template ${OWNCLOUD_USER} owncloud/autoconfig.php ${OWNCLOUD_AUTOCONFIG_PHP} 0644
-    update_template ${OWNCLOUD_AUTOCONFIG_PHP} OWNCLOUD_OCDATA_DIR
-  fi
-
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]]; then
     install_template root nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf 0644
     update_template /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf OWNCLOUD_INSTALL_DIR
