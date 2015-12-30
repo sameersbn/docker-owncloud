@@ -1,3 +1,6 @@
+**latest**
+- owncloud: upgrade to 8.2.2
+
 **8.1.5**
 - owncloud: upgrade to 8.1.5
 - use `maintenance:install` to perform full install at launch
