@@ -1,5 +1,5 @@
 
-**latest**
+**8.0.10**
 - owncloud: upgrade to 8.0.10
 
 **8.0.0**

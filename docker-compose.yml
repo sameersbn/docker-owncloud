@@ -8,7 +8,7 @@ postgresql:
     - /srv/docker/owncloud/postgresql:/var/lib/postgresql
 
 owncloud:
-  image: sameersbn/owncloud:8.0.0
+  image: sameersbn/owncloud:8.0.10
   command: app:owncloud
   environment:
     - DEBUG=false
@@ -29,7 +29,7 @@ owncloud:
     - /srv/docker/owncloud/owncloud:/var/lib/owncloud
 
 nginx:
-  image: sameersbn/owncloud:8.0.0
+  image: sameersbn/owncloud:8.0.10
   command: app:nginx
   links:
     - owncloud:php-fpm

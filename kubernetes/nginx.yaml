@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: nginx
-      image: sameersbn/owncloud:8.0.0
+      image: sameersbn/owncloud:8.0.10
       args: ["app:nginx"]
       env:
         - name: OWNCLOUD_URL
