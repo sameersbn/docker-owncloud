@@ -303,18 +303,15 @@ nginx_configure_virtualhost() {
 }
 
 backup_dump_database() {
-  owncloud_finalize_database_parameters
   case ${DB_TYPE} in
     pgsql)
-      echo -n "Dumping PostgreSQL database ${DB_NAME}"
-      owncloud_check_database_connection
+      echo "Dumping PostgreSQL database ${DB_NAME}..."
       exec_as_owncloud PGPASSWORD=${DB_PASS} pg_dump --clean \
         --host ${DB_HOST} --port ${DB_PORT} \
         --username ${DB_USER} ${DB_NAME} > ${OWNCLOUD_BACKUPS_DIR}/database.sql
       ;;
     mysql)
-      echo -n "Dumping MySQL database ${DB_NAME}"
-      owncloud_check_database_connection
+      echo "Dumping MySQL database ${DB_NAME}..."
       exec_as_owncloud MYSQL_PWD=${DB_PASS} mysqldump --lock-tables --add-drop-table \
         --host ${DB_HOST} --port ${DB_PORT} \
         --user ${DB_USER} ${DB_NAME} > ${OWNCLOUD_BACKUPS_DIR}/database.sql
@@ -383,7 +380,6 @@ backup_restore_validate() {
   eval $(parse_yaml ${OWNCLOUD_BACKUPS_DIR}/backup_information.yml backup_)
 
   ## version check
-  owncloud_finalize_database_parameters
   if [[ $(vercmp ${OWNCLOUD_VERSION} ${backup_info_owncloud_version}) -lt 0 ]]; then
     echo
     echo "ERROR: "
@@ -409,19 +405,16 @@ backup_restore_validate() {
 }
 
 backup_restore_database() {
-  owncloud_finalize_database_parameters
   case ${DB_TYPE} in
     pgsql)
-      echo -n "Restoring PostgreSQL database..."
-      owncloud_check_database_connection
+      echo "Restoring PostgreSQL database..."
       gzip -dc ${OWNCLOUD_BACKUPS_DIR}/database.sql.gz | \
         PGPASSWORD=${DB_PASS} psql \
           --host ${DB_HOST} --port ${DB_PORT} \
           --username ${DB_USER} ${DB_NAME}
       ;;
     mysql)
-      echo -n "Restoring MySQL database..."
-      owncloud_check_database_connection
+      echo "Restoring MySQL database..."
       gzip -dc ${OWNCLOUD_BACKUPS_DIR}/database.sql.gz | \
         MYSQL_PWD=${DB_PASS} mysql \
           --host ${DB_HOST} --port ${DB_PORT} \
@@ -510,6 +503,10 @@ configure_nginx() {
 }
 
 backup_create() {
+  echo -n "Checking database connection"
+  owncloud_finalize_database_parameters
+  owncloud_check_database_connection
+
   occ_cli maintenance:mode --on
   backup_dump_database
   backup_dump_directory ${OWNCLOUD_CONFIG_DIR} .tar.gz
@@ -559,6 +556,10 @@ backup_restore() {
     echo "Specified backup does not exist. Aborting..."
     return 1
   fi
+
+  echo -n "Checking database connection"
+  owncloud_finalize_database_parameters
+  owncloud_check_database_connection
 
   backup_restore_unpack ${tar_file}
   backup_restore_validate
