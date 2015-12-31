@@ -1,4 +1,5 @@
 postgresql:
+  restart: always
   image: sameersbn/postgresql:9.4-11
   environment:
     - DB_USER=owncloud
@@ -8,6 +9,7 @@ postgresql:
     - /srv/docker/owncloud/postgresql:/var/lib/postgresql
 
 owncloud:
+  restart: always
   image: sameersbn/owncloud:8.2.2
   command: app:owncloud
   environment:
