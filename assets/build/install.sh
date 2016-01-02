@@ -22,6 +22,9 @@ sed -i "s|[;]*[ ]*always_populate_raw_post_data = .*|always_populate_raw_post_da
   echo "output_buffering=off"
 ) > ${OWNCLOUD_INSTALL_DIR}/.user.ini
 
+# remove default nginx virtualhost
+rm -rf /etc/nginx/sites-enabled/default
+
 # set directory permissions
 find ${OWNCLOUD_INSTALL_DIR}/ -type f -print0 | xargs -0 chmod 0640
 find ${OWNCLOUD_INSTALL_DIR}/ -type d -print0 | xargs -0 chmod 0750
