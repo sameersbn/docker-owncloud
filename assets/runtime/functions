@@ -4,6 +4,7 @@ source ${OWNCLOUD_RUNTIME_DIR}/env-defaults
 
 OWNCLOUD_TEMPLATES_DIR=${OWNCLOUD_RUNTIME_DIR}/config
 OWNCLOUD_APP_CONFIG=${OWNCLOUD_CONFIG_DIR}/config.php
+OWNCLOUD_NGINX_CONFIG=/etc/nginx/sites-enabled/ownCloud.conf
 
 # Compares two version strings `a` and `b`
 # Returns
@@ -323,7 +324,7 @@ owncloud_configure_max_file_uploads() {
 nginx_configure_virtualhost() {
   echo "Configuring ownCloud virtualhost..."
   owncloud_finalize_php_fpm_parameters
-  update_template /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf \
+  update_template ${OWNCLOUD_NGINX_CONFIG} \
     OWNCLOUD_FQDN \
     OWNCLOUD_PHP_FPM_HOST \
     OWNCLOUD_PHP_FPM_PORT
@@ -474,9 +475,9 @@ backup_restore_directory() {
 
 install_configuration_templates() {
   echo "Installing configuration templates..."
-  if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf ]]; then
-    install_template root nginx/ownCloud.conf /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf 0644
-    update_template /etc/nginx/sites-enabled/${OWNCLOUD_FQDN}.conf OWNCLOUD_INSTALL_DIR
+  if [[ -d /etc/nginx/sites-enabled && ! -f ${OWNCLOUD_NGINX_CONFIG} ]]; then
+    install_template root nginx/ownCloud.conf ${OWNCLOUD_NGINX_CONFIG} 0644
+    update_template ${OWNCLOUD_NGINX_CONFIG} OWNCLOUD_INSTALL_DIR
   fi
 }
 
