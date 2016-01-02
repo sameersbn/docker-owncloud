@@ -83,7 +83,6 @@ docker run --name owncloud-postgresql -itd --restart=always \
   --env 'DB_USER=owncloud' --env 'DB_PASS=password' \
   --volume /srv/docker/owncloud/postgresql:/var/lib/postgresql \
   sameersbn/postgresql:9.4-11
-
 ```
 
 Step 2. Launch the ownCloud php-fpm container
@@ -100,7 +99,7 @@ Step 3. Launch a NGINX frontend container
 
 ```bash
 docker run --name=owncloud-nginx -itd --restart=always \
-  --link owncloud:owncloud-php-fpm \
+  --link owncloud:php-fpm \
   --publish 10080:80 \
   sameersbn/owncloud:8.2.2 app:nginx
 ```
