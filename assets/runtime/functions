@@ -3,7 +3,7 @@ set -e
 source ${OWNCLOUD_RUNTIME_DIR}/env-defaults
 
 OWNCLOUD_TEMPLATES_DIR=${OWNCLOUD_RUNTIME_DIR}/config
-OWNCLOUD_CONFIG_PHP=${OWNCLOUD_CONFIG_DIR}/config.php
+OWNCLOUD_APP_CONFIG=${OWNCLOUD_CONFIG_DIR}/config.php
 
 # Compares two version strings `a` and `b`
 # Returns
@@ -94,7 +94,7 @@ update_template() {
 
 owncloud_get_param() {
   local key=${1?missing argument}
-  exec_as_owncloud sed -n -e "s/\([ ]*\)\('${key}' => '\)\([^ ']*\)\(.*\)$/\3/p" ${OWNCLOUD_CONFIG_PHP}
+  exec_as_owncloud sed -n -e "s/\([ ]*\)\('${key}' => '\)\([^ ']*\)\(.*\)$/\3/p" ${OWNCLOUD_APP_CONFIG}
 }
 
 owncloud_set_param() {
@@ -109,7 +109,7 @@ owncloud_set_param() {
         *) echo "‣ Setting config.php parameter: ${key} = '${value}'" ;;
       esac
       value="$(echo "${value}" | sed 's|[&]|\\&|g')"
-      exec_as_owncloud sed -i "s|'${key}' => .*|'${key}' => '${value}',|" ${OWNCLOUD_CONFIG_PHP}
+      exec_as_owncloud sed -i "s|'${key}' => .*|'${key}' => '${value}',|" ${OWNCLOUD_APP_CONFIG}
     fi
   fi
 }
@@ -237,7 +237,7 @@ owncloud_configure_database() {
   owncloud_finalize_database_parameters
   owncloud_check_database_connection
 
-  if [[ -f ${OWNCLOUD_CONFIG_PHP} ]]; then
+  if [[ -f ${OWNCLOUD_APP_CONFIG} ]]; then
     owncloud_set_param dbtype ${DB_TYPE}
     owncloud_set_param dbhost ${DB_HOST}:${DB_PORT}
     owncloud_set_param dbname ${DB_NAME}
@@ -304,7 +304,7 @@ owncloud_upgrade() {
 owncloud_configure_domain() {
   echo "Configuring ownCloud::trusted_domain..."
   owncloud_set_param overwrite.cli.url ${OWNCLOUD_URL}
-  sed -i "s|0 => '.*',|0 => '${OWNCLOUD_FQDN}',|" ${OWNCLOUD_CONFIG_PHP}
+  sed -i "s|0 => '.*',|0 => '${OWNCLOUD_FQDN}',|" ${OWNCLOUD_APP_CONFIG}
 }
 
 owncloud_configure_max_upload_size() {
@@ -517,7 +517,7 @@ configure_owncloud() {
   owncloud_configure_max_upload_size
   owncloud_configure_max_file_uploads
 
-  if [[ -f ${OWNCLOUD_CONFIG_PHP} ]]; then
+  if [[ -f ${OWNCLOUD_APP_CONFIG} ]]; then
     occ_cli maintenance:mode --quiet --off
   fi
 }
