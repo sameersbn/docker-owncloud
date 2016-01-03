@@ -326,6 +326,7 @@ nginx_configure_virtualhost() {
   owncloud_finalize_php_fpm_parameters
   update_template ${OWNCLOUD_NGINX_CONFIG} \
     OWNCLOUD_FQDN \
+    OWNCLOUD_HTTPS \
     OWNCLOUD_PHP_FPM_HOST \
     OWNCLOUD_PHP_FPM_PORT
 }

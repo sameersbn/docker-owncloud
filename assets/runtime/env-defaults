@@ -16,7 +16,12 @@ OWNCLOUD_URL=${OWNCLOUD_URL:-$PHP_FPM_ENV_OWNCLOUD_URL}
 OWNCLOUD_URL=${OWNCLOUD_URL:-http://localhost}
 
 # credits: http://stackoverflow.com/a/2506635/4799938
-OWNCLOUD_FQDN=$(sed -e "s/[^/]*\/\/\([^@]*@\)\?\([^:/]*\).*/\2/" <<< ${OWNCLOUD_URL})
+OWNCLOUD_FQDN=$(sed -e "s/\([^/]*\)\:\/\/\([^@]*@\)\?\([^:/]*\).*/\3/" <<< ${OWNCLOUD_URL})
+if [[ $(sed -e "s/\([^/]*\)\:\/\/\([^@]*@\)\?\([^:/]*\).*/\1/" <<< ${OWNCLOUD_URL}) == https ]]; then
+  OWNCLOUD_HTTPS=${OWNCLOUD_HTTPS:-on}
+else
+  OWNCLOUD_HTTPS=${OWNCLOUD_HTTPS:-off}
+fi
 
 OWNCLOUD_UPLOAD_MAX_FILESIZE=${OWNCLOUD_UPLOAD_MAX_FILESIZE:-4G}
 OWNCLOUD_MAX_FILE_UPLOADS=${OWNCLOUD_MAX_FILE_UPLOADS:-20}
