@@ -64,7 +64,7 @@ docker build -t sameersbn/owncloud github.com/sameersbn/docker-owncloud
 The quickest way to start using this image is with [docker-compose](https://docs.docker.com/compose/).
 
 ```bash
-wget https://raw.githubusercontent.com/sameersbn/docker-owncloud/master/docker-compose.example.yml -O docker-compose.yml
+wget https://raw.githubusercontent.com/sameersbn/docker-owncloud/master/docker-compose.yml
 ```
 
 Update the `OWNCLOUD_URL` environment variable in the `docker-compose.yml` file with the url from which ownCloud will be externally accessible.
