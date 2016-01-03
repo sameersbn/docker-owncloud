@@ -33,6 +33,9 @@ owncloud:
 nginx:
   image: sameersbn/owncloud:8.2.2
   command: app:nginx
+  environment:
+    - INVOICEPLANE_PHP_FPM_HOST=
+    - INVOICEPLANE_PHP_FPM_PORT=
   links:
     - owncloud:php-fpm
   ports:
