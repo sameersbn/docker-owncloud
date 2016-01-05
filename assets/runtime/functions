@@ -50,20 +50,22 @@ occ_cli() {
 }
 
 ## Copies configuration template in ${OWNCLOUD_TEMPLATES_DIR} to the destination as the specified USER
-# $1: copy-as user
+# $1: ownership of destination file, uses `chown`
 # $2: source file
 # $3: destination location
-# $4: mode of destination
+# $4: mode of destination, uses `chmod` (default: 0644)
 install_template() {
-  local USR=${1}
+  local OWNERSHIP=${1}
   local SRC=${2}
   local DEST=${3}
   local MODE=${4:-0644}
   if [[ -f ${OWNCLOUD_TEMPLATES_DIR}/${SRC} ]]; then
-    sudo -HEu ${USR} cp ${OWNCLOUD_TEMPLATES_DIR}/${SRC} ${DEST}
+    cp ${OWNCLOUD_TEMPLATES_DIR}/${SRC} ${DEST}
   fi
   chmod ${MODE} ${DEST}
+  chown ${OWNERSHIP} ${DEST}
 }
+
 
 ## Replace placeholders with values
 # $1: file with placeholders to replace
@@ -477,7 +479,7 @@ backup_restore_directory() {
 install_configuration_templates() {
   echo "Installing configuration templates..."
   if [[ -d /etc/nginx/sites-enabled && ! -f ${OWNCLOUD_NGINX_CONFIG} ]]; then
-    install_template root nginx/ownCloud.conf ${OWNCLOUD_NGINX_CONFIG} 0644
+    install_template root: nginx/ownCloud.conf ${OWNCLOUD_NGINX_CONFIG} 0644
     update_template ${OWNCLOUD_NGINX_CONFIG} OWNCLOUD_INSTALL_DIR
   fi
 }
