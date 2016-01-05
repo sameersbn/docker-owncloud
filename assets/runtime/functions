@@ -266,7 +266,7 @@ owncloud_upgrade() {
   if [[ -z ${COUNT} || ${COUNT} -eq 0 ]]; then
     echo "Setting up ownCloud for firstrun..."
     mkdir -p ${OWNCLOUD_INSTALL_DIR}/data
-    chown -R www-data:www-data ${OWNCLOUD_INSTALL_DIR}/data
+    chown -R ${OWNCLOUD_USER}: ${OWNCLOUD_INSTALL_DIR}/data
 
     occ_cli maintenance:install \
       --database=${DB_TYPE} --database-host=${DB_HOST}:${DB_PORT} \
@@ -367,7 +367,7 @@ backup_dump_information() {
     echo "  database_adapter: $(owncloud_get_param dbtype)"
     echo "  created_at: $(date)"
   ) > ${OWNCLOUD_BACKUPS_DIR}/backup_information.yml
-  chown ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_BACKUPS_DIR}/backup_information.yml
+  chown ${OWNCLOUD_USER}: ${OWNCLOUD_BACKUPS_DIR}/backup_information.yml
 }
 
 backup_create_archive() {
@@ -487,22 +487,22 @@ install_configuration_templates() {
 initialize_datadir() {
   echo "Initializing datadir..."
   chmod 0755 ${OWNCLOUD_DATA_DIR}
-  chown ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_DATA_DIR}
+  chown ${OWNCLOUD_USER}: ${OWNCLOUD_DATA_DIR}
 
   # create ocdata directory
   mkdir -p ${OWNCLOUD_OCDATA_DIR}
-  chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_OCDATA_DIR}
+  chown -R ${OWNCLOUD_USER}: ${OWNCLOUD_OCDATA_DIR}
   chmod -R 0750 ${OWNCLOUD_OCDATA_DIR}
 
   # create config directory
   mkdir -p ${OWNCLOUD_CONFIG_DIR}
-  chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_CONFIG_DIR}
+  chown -R ${OWNCLOUD_USER}: ${OWNCLOUD_CONFIG_DIR}
   chmod -R 0750 ${OWNCLOUD_CONFIG_DIR}
 
   # create backups directory
   mkdir -p ${OWNCLOUD_BACKUPS_DIR}
   chmod -R 0755 ${OWNCLOUD_BACKUPS_DIR}
-  chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_BACKUPS_DIR}
+  chown -R ${OWNCLOUD_USER}: ${OWNCLOUD_BACKUPS_DIR}
 
   # symlink to config/config.php -> ${OWNCLOUD_CONFIG_DIR}/config.php
   ln -sf ${OWNCLOUD_CONFIG_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php

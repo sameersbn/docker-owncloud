@@ -29,9 +29,9 @@ rm -rf /etc/nginx/sites-enabled/default
 find ${OWNCLOUD_INSTALL_DIR}/ -type f -print0 | xargs -0 chmod 0640
 find ${OWNCLOUD_INSTALL_DIR}/ -type d -print0 | xargs -0 chmod 0750
 chown -R root:${OWNCLOUD_USER} ${OWNCLOUD_INSTALL_DIR}/
-chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_INSTALL_DIR}/apps/
-chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_INSTALL_DIR}/config/
-chown -R ${OWNCLOUD_USER}:${OWNCLOUD_USER} ${OWNCLOUD_INSTALL_DIR}/themes/
+chown -R ${OWNCLOUD_USER}: ${OWNCLOUD_INSTALL_DIR}/apps/
+chown -R ${OWNCLOUD_USER}: ${OWNCLOUD_INSTALL_DIR}/config/
+chown -R ${OWNCLOUD_USER}: ${OWNCLOUD_INSTALL_DIR}/themes/
 chown root:${OWNCLOUD_USER} ${OWNCLOUD_INSTALL_DIR}/.htaccess
 chmod 0644 ${OWNCLOUD_INSTALL_DIR}/.htaccess
 chown root:${OWNCLOUD_USER} ${OWNCLOUD_INSTALL_DIR}/.user.ini
