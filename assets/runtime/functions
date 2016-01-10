@@ -337,17 +337,18 @@ backup_dump_database() {
   case ${DB_TYPE} in
     pgsql)
       echo "Dumping PostgreSQL database ${DB_NAME}..."
-      exec_as_owncloud PGPASSWORD=${DB_PASS} pg_dump --clean \
+      PGPASSWORD=${DB_PASS} pg_dump --clean \
         --host ${DB_HOST} --port ${DB_PORT} \
         --username ${DB_USER} ${DB_NAME} > ${OWNCLOUD_BACKUPS_DIR}/database.sql
       ;;
     mysql)
       echo "Dumping MySQL database ${DB_NAME}..."
-      exec_as_owncloud MYSQL_PWD=${DB_PASS} mysqldump --lock-tables --add-drop-table \
+      MYSQL_PWD=${DB_PASS} mysqldump --lock-tables --add-drop-table \
         --host ${DB_HOST} --port ${DB_PORT} \
         --user ${DB_USER} ${DB_NAME} > ${OWNCLOUD_BACKUPS_DIR}/database.sql
       ;;
   esac
+  chown ${OWNCLOUD_USER}: ${OWNCLOUD_BACKUPS_DIR}/database.sql
   exec_as_owncloud gzip -f ${OWNCLOUD_BACKUPS_DIR}/database.sql
 }
 
