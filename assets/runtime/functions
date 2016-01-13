@@ -312,7 +312,7 @@ owncloud_configure_domain() {
 
 owncloud_configure_apps_paths() {
   echo "Configuring ownCloud::apps_paths..."
-  read -r -d '' apps_paths << EOF
+  read -r -d '' apps_paths << EOM
 array (
   0 => array (
     "path"     => OC::$SERVERROOT."/apps",
