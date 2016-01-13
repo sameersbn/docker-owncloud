@@ -31,6 +31,8 @@ COPY assets/tools/ /usr/bin/
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 
+EXPOSE 80/tcp
+
 VOLUME ["${OWNCLOUD_DATA_DIR}"]
 
 WORKDIR ${OWNCLOUD_INSTALL_DIR}
