@@ -310,6 +310,25 @@ owncloud_configure_domain() {
   sed -i "s|0 => '.*',|0 => '${OWNCLOUD_FQDN}',|" ${OWNCLOUD_APP_CONFIG}
 }
 
+owncloud_configure_apps_paths() {
+  echo "Configuring ownCloud::apps_paths..."
+  read -r -d '' apps_paths << EOF
+array (
+  0 => array (
+    "path"     => OC::$SERVERROOT."/apps",
+    "url"      => "/apps",
+    "writable" => false,
+  ),
+  1 => array (
+    "path"     => OC::$SERVERROOT."/apps2",
+    "url"      => "/apps2",
+    "writable" => true,
+  ),
+)
+EOM
+  owncloud_set_param apps_paths "$apps_paths"
+}
+
 owncloud_configure_max_upload_size() {
   echo "Configuring ownCloud::max_upload_size..."
   (
@@ -505,8 +524,16 @@ initialize_datadir() {
   chmod -R 0755 ${OWNCLOUD_BACKUPS_DIR}
   chown -R ${OWNCLOUD_USER}: ${OWNCLOUD_BACKUPS_DIR}
 
+  # create apps directory
+  mkdir -p ${OWNCLOUD_APPS_DIR}
+  chown -R ${OWNCLOUD_USER}: ${OWNCLOUD_APPS_DIR}
+  chmod -R 0750 ${OWNCLOUD_APPS_DIR}
+
   # symlink to config/config.php -> ${OWNCLOUD_CONFIG_DIR}/config.php
   ln -sf ${OWNCLOUD_CONFIG_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
+
+  # symlink to apps2 -> ${OWNCLOUD_APPS_DIR}
+  ln -sf ${OWNCLOUD_APPS_DIR} ${OWNCLOUD_INSTALL_DIR}/apps2
 }
 
 initialize_system() {
@@ -519,6 +546,7 @@ configure_owncloud() {
   owncloud_configure_database
   owncloud_upgrade
   owncloud_configure_domain
+  owncloud_configure_apps_paths
   owncloud_configure_max_upload_size
   owncloud_configure_max_file_uploads
 
@@ -541,6 +569,7 @@ backup_create() {
   backup_dump_database
   backup_dump_directory ${OWNCLOUD_CONFIG_DIR} .tar.gz
   backup_dump_directory ${OWNCLOUD_OCDATA_DIR} .tar
+  backup_dump_directory ${OWNCLOUD_APPS_DIR} .tar.gz
   backup_dump_information
   backup_create_archive backup_information.yml database.sql.gz config.tar.gz ocdata.tar
   backup_purge_expired
@@ -596,4 +625,5 @@ backup_restore() {
   backup_restore_database
   backup_restore_directory ${OWNCLOUD_CONFIG_DIR} .tar.gz
   backup_restore_directory ${OWNCLOUD_OCDATA_DIR} .tar
+  backup_restore_directory ${OWNCLOUD_APPS_DIR} .tar.gz
 }
