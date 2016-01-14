@@ -312,20 +312,7 @@ owncloud_configure_domain() {
 
 owncloud_configure_apps_paths() {
   echo "Configuring ownCloud::apps_paths..."
-  read -r -d '' apps_paths << EOM
-array (
-  0 => array (
-    "path"     => OC::$SERVERROOT."/apps",
-    "url"      => "/apps",
-    "writable" => false,
-  ),
-  1 => array (
-    "path"     => OC::$SERVERROOT."/apps2",
-    "url"      => "/apps2",
-    "writable" => true,
-  ),
-)
-EOM
+  apps_paths="array ( 0 => array ( 'path' => OC::\$SERVERROOT.'/apps', 'url' => '/apps', 'writable' => false, ), 1 => array ( 'path' => OC::\$SERVERROOT.'/apps2', 'url' => '/apps2', 'writable' => true, ),)"
   owncloud_set_param apps_paths "$apps_paths"
 }
 
