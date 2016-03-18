@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: owncloud
-      image: sameersbn/owncloud:8.2.2-4
+      image: sameersbn/owncloud:8.2.2-5
       args: ["app:owncloud"]
       env:
         - name: TZ
