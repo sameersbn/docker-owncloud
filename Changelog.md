@@ -1,3 +1,6 @@
+**latest**
+- owncloud: upgrade to 9.0.0
+
 **8.2.3**
 - owncloud: upgrade to 8.2.3
 

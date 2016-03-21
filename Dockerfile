@@ -1,7 +1,7 @@
 FROM sameersbn/php5-fpm:latest
 MAINTAINER sameer@damagehead.com
 
-ENV OWNCLOUD_VERSION=8.2.3 \
+ENV OWNCLOUD_VERSION=9.0.0 \
     OWNCLOUD_USER=${PHP_FPM_USER} \
     OWNCLOUD_INSTALL_DIR=/var/www/owncloud \
     OWNCLOUD_DATA_DIR=/var/lib/owncloud \
