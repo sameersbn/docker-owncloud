@@ -1,6 +1,6 @@
 [![Docker Repository on Quay.io](https://quay.io/repository/sameersbn/owncloud/status "Docker Repository on Quay.io")](https://quay.io/repository/sameersbn/owncloud)
 
-# sameersbn/owncloud:9.0.0
+# sameersbn/owncloud:9.0.0-1
 
 - [Introduction](#introduction)
   - [Contributing](#contributing)
@@ -50,7 +50,7 @@ Automated builds of the image are available on [Dockerhub](https://hub.docker.co
 > **Note**: Builds are also available on [Quay.io](https://quay.io/repository/sameersbn/owncloud)
 
 ```bash
-docker pull sameersbn/owncloud:9.0.0
+docker pull sameersbn/owncloud:9.0.0-1
 ```
 
 Alternatively you can build the image yourself.
@@ -92,7 +92,7 @@ docker run --name owncloud -itd --restart=always \
   --env OWNCLOUD_URL=http://cloud.example.com:10080 \
   --link owncloud-postgresql:postgresql \
   --volume /srv/docker/owncloud/owncloud:/var/lib/owncloud \
-  sameersbn/owncloud:9.0.0 app:owncloud
+  sameersbn/owncloud:9.0.0-1 app:owncloud
 ```
 
 Step 3. Launch a NGINX frontend container
@@ -101,7 +101,7 @@ Step 3. Launch a NGINX frontend container
 docker run --name owncloud-nginx -itd --restart=always \
   --link owncloud:php-fpm \
   --publish 10080:80 \
-  sameersbn/owncloud:9.0.0 app:nginx
+  sameersbn/owncloud:9.0.0-1 app:nginx
 ```
 
 Point your browser to `http://cloud.example.com:10080` and login using the default username and password:
@@ -142,7 +142,7 @@ Relaunch the container with the `app:backup:create` argument.
 
 ```bash
 docker run --name owncloud -it --rm [OPTIONS] \
-  sameersbn/owncloud:9.0.0 app:backup:create
+  sameersbn/owncloud:9.0.0-1 app:backup:create
 ```
 
 The backup will be created in the `backups/` folder of the [Persistent](#persistence) volume. You can change the location using the `OWNCLOUD_BACKUPS_DIR` configuration parameter.
@@ -171,7 +171,7 @@ Relaunch the container with the `app:backup:restore` argument. Ensure you launch
 
 ```bash
 docker run --name owncloud -it --rm [OPTIONS] \
-  sameersbn/owncloud:9.0.0 app:backup:restore
+  sameersbn/owncloud:9.0.0-1 app:backup:restore
 ```
 
 A list of existing backups will be displayed. Select a backup you wish to restore.
@@ -180,7 +180,7 @@ To avoid this interaction you can specify the backup filename using the `BACKUP`
 
 ```bash
 docker run --name owncloud -it --rm [OPTIONS] \
-  sameersbn/owncloud:9.0.0 app:backup:restore BACKUP=1417624827_owncloud_backup.tar
+  sameersbn/owncloud:9.0.0-1 app:backup:restore BACKUP=1417624827_owncloud_backup.tar
 ```
 
 ## Upgrading
@@ -190,7 +190,7 @@ To upgrade to newer releases:
   1. Download the updated Docker image:
 
   ```bash
-  docker pull sameersbn/owncloud:9.0.0
+  docker pull sameersbn/owncloud:9.0.0-1
   ```
 
   2. Stop the currently running image:
@@ -210,7 +210,7 @@ To upgrade to newer releases:
   ```bash
   docker run -name owncloud -itd \
     [OPTIONS] \
-    sameersbn/owncloud:9.0.0
+    sameersbn/owncloud:9.0.0-1
   ```
 
 ## Shell Access
