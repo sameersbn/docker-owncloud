@@ -1,4 +1,4 @@
-**latest**
+**9.0.1**
 - owncloud: upgrade to 9.0.1
 
 **9.0.0**
