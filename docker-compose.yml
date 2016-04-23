@@ -10,7 +10,7 @@ postgresql:
 
 owncloud:
   restart: always
-  image: sameersbn/owncloud:9.0.1-1
+  image: sameersbn/owncloud:9.0.1-2
   command: app:owncloud
   environment:
     - DEBUG=false
@@ -31,7 +31,7 @@ owncloud:
     - /srv/docker/owncloud/owncloud:/var/lib/owncloud
 
 nginx:
-  image: sameersbn/owncloud:9.0.1-1
+  image: sameersbn/owncloud:9.0.1-2
   command: app:nginx
   environment:
     - OWNCLOUD_PHP_FPM_HOST=
