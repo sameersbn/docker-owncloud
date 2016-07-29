@@ -1,6 +1,6 @@
 postgresql:
   restart: always
-  image: sameersbn/postgresql:9.4-23
+  image: sameersbn/postgresql:9.4-24
   environment:
     - DB_USER=owncloud
     - DB_PASS=password
