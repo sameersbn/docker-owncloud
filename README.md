@@ -82,7 +82,7 @@ docker run --name owncloud-postgresql -itd --restart=always \
   --env 'DB_NAME=owncloud_db' \
   --env 'DB_USER=owncloud' --env 'DB_PASS=password' \
   --volume /srv/docker/owncloud/postgresql:/var/lib/postgresql \
-  sameersbn/postgresql:9.5-1
+  sameersbn/postgresql:9.5-2
 ```
 
 Step 2. Launch the ownCloud php-fpm container
