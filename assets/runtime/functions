@@ -297,7 +297,7 @@ owncloud_upgrade() {
       --database=${DB_TYPE} --database-host=${DB_HOST}:${DB_PORT} \
       --database-name=${DB_NAME} --database-user=${DB_USER} --database-pass=${DB_PASS} \
       --admin-user=${OWNCLOUD_ADMIN_USER} --admin-pass=${OWNCLOUD_ADMIN_PASSWORD} \
-      --data-dir=${OWNCLOUD_OCDATA_DIR} >/dev/null
+      --data-dir=${OWNCLOUD_OCDATA_DIR}
 
     update_version=true
   else
