@@ -1,20 +1,29 @@
-postgresql:
-  restart: always
-  image: sameersbn/postgresql:9.5-4
-  environment:
+version: '2'
+
+services:
+  postgresql:
+    restart: always
+    image: sameersbn/postgresql:9.5-4
+    environment:
     - DB_USER=owncloud
     - DB_PASS=password
     - DB_NAME=owncloud_db
-  volumes:
+    volumes:
     - /srv/docker/owncloud/postgresql:/var/lib/postgresql
 
-owncloud:
-  restart: always
-  image: sameersbn/owncloud:9.1.3
-  command: app:owncloud
-  environment:
+  owncloud:
+    restart: always
+    image: sameersbn/owncloud:9.1.3
+    command: app:owncloud
+    environment:
     - DEBUG=false
     - TZ=Asia/Kolkata
+
+    - DB_TYPE=pgsql
+    - DB_HOST=postgresql
+    - DB_USER=owncloud
+    - DB_PASS=password
+    - DB_NAME=owncloud_db
 
     - OWNCLOUD_URL=http://cloud.example.com:10080
 
@@ -25,18 +34,19 @@ owncloud:
     - OWNCLOUD_MAX_FILE_UPLOADS=20
 
     - OWNCLOUD_BACKUPS_EXPIRY=0
-  links:
-    - postgresql:postgresql
-  volumes:
+    depends_on:
+    - postgresql
+    volumes:
     - /srv/docker/owncloud/owncloud:/var/lib/owncloud
 
-nginx:
-  image: sameersbn/owncloud:9.1.3
-  command: app:nginx
-  environment:
-    - OWNCLOUD_PHP_FPM_HOST=
-    - OWNCLOUD_PHP_FPM_PORT=
-  links:
-    - owncloud:php-fpm
-  ports:
+  nginx:
+    restart: always
+    image: sameersbn/owncloud:9.1.3
+    command: app:nginx
+    environment:
+    - OWNCLOUD_PHP_FPM_HOST=owncloud
+    - OWNCLOUD_PHP_FPM_PORT=9000
+    depends_on:
+    - owncloud
+    ports:
     - "10080:80"
