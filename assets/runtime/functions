@@ -120,28 +120,6 @@ update_template() {
   rm -f ${tmp_file}
 }
 
-owncloud_get_param() {
-  local key=${1?missing argument}
-  exec_as_owncloud sed -n -e "s/\([ ]*\)\('${key}' => '\)\([^ ']*\)\(.*\)$/\3/p" ${OWNCLOUD_APP_CONFIG}
-}
-
-owncloud_set_param() {
-  local key=${1?missing argument}
-  local value=${2?missing argument}
-  local hide=${3}
-  if [[ -n ${value} ]]; then
-    local current=$(owncloud_get_param ${key})
-    if [[ "${current}" != "${value}" ]]; then
-      case ${hide} in
-        true)  echo "‣ Setting config.php parameter: ${key}" ;;
-        *) echo "‣ Setting config.php parameter: ${key} = '${value}'" ;;
-      esac
-      value="$(echo "${value}" | sed 's|[&]|\\&|g')"
-      exec_as_owncloud sed -i "s|'${key}' => .*|'${key}' => '${value}',|" ${OWNCLOUD_APP_CONFIG}
-    fi
-  fi
-}
-
 owncloud_finalize_database_parameters() {
   # is a mysql or postgresql database linked?
   # requires that the mysql or postgresql containers have exposed
@@ -266,11 +244,11 @@ owncloud_configure_database() {
   owncloud_check_database_connection
 
   if [[ -f ${OWNCLOUD_APP_CONFIG} ]]; then
-    owncloud_set_param dbtype ${DB_TYPE}
-    owncloud_set_param dbhost ${DB_HOST}:${DB_PORT}
-    owncloud_set_param dbname ${DB_NAME}
-    owncloud_set_param dbuser ${DB_USER}
-    owncloud_set_param dbpassword ${DB_PASS} true
+    occ_cli config:system:set dbtype --value ${DB_TYPE}
+    occ_cli config:system:set dbhost --value ${DB_HOST}:${DB_PORT}
+    occ_cli config:system:set dbname --value ${DB_NAME}
+    occ_cli config:system:set dbuser --value ${DB_USER}
+    occ_cli config:system:set dbpassword --value ${DB_PASS} -q
   fi
 }
 
@@ -331,8 +309,7 @@ owncloud_upgrade() {
 
 owncloud_configure_domain() {
   echo "Configuring ownCloud::trusted_domain..."
-  owncloud_set_param overwrite.cli.url ${OWNCLOUD_URL}
-  sed -i "s|0 => '.*',|0 => '${OWNCLOUD_FQDN}',|" ${OWNCLOUD_APP_CONFIG}
+  occ_cli config:system:set -q trusted_domains 0 --value ${OWNCLOUD_FQDN}
 }
 
 owncloud_configure_max_upload_size() {
@@ -388,7 +365,7 @@ backup_dump_information() {
   (
     echo "info:"
     echo "  owncloud_version: ${OWNCLOUD_VERSION}"
-    echo "  database_adapter: $(owncloud_get_param dbtype)"
+    echo "  database_adapter: $(occ_cli config:system:get dbtype)"
     echo "  created_at: $(date)"
   ) > ${OWNCLOUD_BACKUPS_DIR}/backup_information.yml
   chown ${OWNCLOUD_USER}: ${OWNCLOUD_BACKUPS_DIR}/backup_information.yml
