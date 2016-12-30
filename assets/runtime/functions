@@ -505,8 +505,8 @@ initialize_datadir() {
   chmod -R 0755 ${OWNCLOUD_BACKUPS_DIR}
   chown -R ${OWNCLOUD_USER}: ${OWNCLOUD_BACKUPS_DIR}
 
-  # symlink to config/config.php -> ${OWNCLOUD_CONFIG_DIR}/config.php
-  ln -sf ${OWNCLOUD_CONFIG_DIR}/config.php ${OWNCLOUD_INSTALL_DIR}/config/config.php
+  # symlink to config/config.php -> ${OWNCLOUD_APP_CONFIG}
+  ln -sf ${OWNCLOUD_APP_CONFIG} ${OWNCLOUD_INSTALL_DIR}/config/config.php
 }
 
 initialize_system() {
