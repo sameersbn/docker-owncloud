@@ -1,7 +1,8 @@
 FROM sameersbn/ubuntu:14.04.20170123
 MAINTAINER sameer@damagehead.com
 
-ENV OWNCLOUD_VERSION=9.1.3 \
+ENV PHP_VERSION=5.6 \
+    OWNCLOUD_VERSION=9.1.3 \
     OWNCLOUD_USER=www-data \
     OWNCLOUD_INSTALL_DIR=/var/www/owncloud \
     OWNCLOUD_DATA_DIR=/var/lib/owncloud \
@@ -18,13 +19,14 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 14AA40EC0831756
  && echo 'deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-      php5-fpm php5-cli php5-gd \
-      php5-pgsql php5-mysql \
-      php5-curl php5-intl php5-mcrypt php5-ldap \
-      php5-gmp php5-apcu php5-imagick \
-      mysql-client postgresql-client nginx gettext-base \
- && sed -i 's/^listen = .*/listen = 0.0.0.0:9000/' /etc/php5/fpm/pool.d/www.conf \
- && php5enmod mcrypt \
+      nginx mysql-client postgresql-client gettext-base \
+      php${PHP_VERSION}-fpm php${PHP_VERSION}-cli php${PHP_VERSION}-gd \
+      php${PHP_VERSION}-pgsql php${PHP_VERSION}-mysql php${PHP_VERSION}-curl \
+      php${PHP_VERSION}-zip php${PHP_VERSION}-xml php${PHP_VERSION}-mbstring \
+      php${PHP_VERSION}-intl php${PHP_VERSION}-mcrypt php${PHP_VERSION}-ldap \
+      php${PHP_VERSION}-gmp php${PHP_VERSION}-apcu php${PHP_VERSION}-imagick \
+ && sed -i 's/^listen = .*/listen = 0.0.0.0:9000/' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf \
+ && phpenmod -v ALL mcrypt \
  && rm -rf /var/lib/apt/lists/*
 
 COPY assets/build/ ${OWNCLOUD_BUILD_DIR}/
