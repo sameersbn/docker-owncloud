@@ -13,8 +13,10 @@ tar -xf ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2 --strip=1 -C 
 rm -rf ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2
 
 # required by owncloud
-sed -i "s|[;]*[ ]*always_populate_raw_post_data = .*|always_populate_raw_post_data = -1|" /etc/php5/fpm/php.ini
-sed -i "s|[;]*[ ]*always_populate_raw_post_data = .*|always_populate_raw_post_data = -1|" /etc/php5/cli/php.ini
+sed -i "s|[;]*[ ]*always_populate_raw_post_data = .*|always_populate_raw_post_data = -1|" /etc/php/${PHP_VERSION}/fpm/php.ini
+sed -i "s|[;]*[ ]*always_populate_raw_post_data = .*|always_populate_raw_post_data = -1|" /etc/php/${PHP_VERSION}/cli/php.ini
+
+mkdir -p /run/php/
 
 # remove default nginx virtualhost
 rm -rf /etc/nginx/sites-enabled/default
