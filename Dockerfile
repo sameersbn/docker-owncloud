@@ -1,7 +1,7 @@
 FROM sameersbn/ubuntu:14.04.20170123
 MAINTAINER sameer@damagehead.com
 
-ENV PHP_VERSION=5.6 \
+ENV PHP_VERSION=7.0 \
     OWNCLOUD_VERSION=9.1.3 \
     OWNCLOUD_USER=www-data \
     OWNCLOUD_INSTALL_DIR=/var/www/owncloud \
