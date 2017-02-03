@@ -13,7 +13,7 @@ case ${1} in
       app:owncloud)
         configure_owncloud
         echo "Starting ownCloud php5-fpm..."
-        exec $(which php5-fpm)
+        exec $(which php5-fpm) -F
         ;;
       app:nginx)
         configure_nginx
