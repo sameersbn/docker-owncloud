@@ -1,5 +1,6 @@
 **latest**
 - php: update to PHP 7.0
+- owncloud: upgrade to 9.1.4
 
 **9.1.0**
 - owncloud: upgrade to 9.1.0
