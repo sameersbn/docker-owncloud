@@ -2,7 +2,7 @@ FROM sameersbn/ubuntu:14.04.20171024
 MAINTAINER sameer@damagehead.com
 
 ENV PHP_VERSION=7.0 \
-    OWNCLOUD_VERSION=9.1.5 \
+    OWNCLOUD_VERSION=9.1.6 \
     OWNCLOUD_USER=www-data \
     OWNCLOUD_INSTALL_DIR=/var/www/owncloud \
     OWNCLOUD_DATA_DIR=/var/lib/owncloud \
