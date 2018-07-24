@@ -1,5 +1,6 @@
-FROM sameersbn/ubuntu:14.04.20171024
-MAINTAINER sameer@damagehead.com
+FROM ubuntu:trusty-20180712
+
+LABEL maintainer="sameer@damagehead.com"
 
 ENV PHP_VERSION=7.0 \
     OWNCLOUD_VERSION=9.1.6 \
@@ -11,14 +12,16 @@ ENV PHP_VERSION=7.0 \
 ENV OWNCLOUD_BUILD_DIR=${OWNCLOUD_CACHE_DIR}/build \
     OWNCLOUD_RUNTIME_DIR=${OWNCLOUD_CACHE_DIR}/runtime
 
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 14AA40EC0831756756D7F66C4F4EA0AAE5267A6C \
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends wget ca-certificates \
+ && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 14AA40EC0831756756D7F66C4F4EA0AAE5267A6C \
  && echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu trusty main" >> /etc/apt/sources.list \
  && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F782CC4951600A6F0A3C300EE8C \
  && echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu trusty main" >> /etc/apt/sources.list \
  && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
  && echo 'deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
  && apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       nginx mysql-client postgresql-client gettext-base \
       php${PHP_VERSION}-fpm php${PHP_VERSION}-cli php${PHP_VERSION}-gd \
       php${PHP_VERSION}-pgsql php${PHP_VERSION}-mysql php${PHP_VERSION}-curl \
