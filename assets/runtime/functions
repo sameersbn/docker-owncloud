@@ -487,6 +487,7 @@ install_configuration_templates() {
 
 initialize_datadir() {
   echo "Initializing datadir..."
+  mkdir -p ${OWNCLOUD_DATA_DIR}
   chmod 0755 ${OWNCLOUD_DATA_DIR}
   chown ${OWNCLOUD_USER}: ${OWNCLOUD_DATA_DIR}
 
