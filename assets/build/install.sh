@@ -3,14 +3,14 @@ set -e
 
 mkdir -p ${OWNCLOUD_INSTALL_DIR}
 
-if [[ ! -f ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2 ]]; then
+if [[ ! -f ${OWNCLOUD_BUILD_ASSETS_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2 ]]; then
   echo "Downloading ownCloud ${OWNCLOUD_VERSION}..."
-  wget "https://download.owncloud.org/community/owncloud-${OWNCLOUD_VERSION}.tar.bz2" -O ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2
+  wget "https://download.owncloud.org/community/owncloud-${OWNCLOUD_VERSION}.tar.bz2" -O ${OWNCLOUD_BUILD_ASSETS_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2
 fi
 
 echo "Extracting ownCloud ${OWNCLOUD_VERSION}..."
-tar -xf ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2 --strip=1 -C ${OWNCLOUD_INSTALL_DIR}
-rm -rf ${OWNCLOUD_BUILD_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2
+tar -xf ${OWNCLOUD_BUILD_ASSETS_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2 --strip=1 -C ${OWNCLOUD_INSTALL_DIR}
+rm -rf ${OWNCLOUD_BUILD_ASSETS_DIR}/owncloud-${OWNCLOUD_VERSION}.tar.bz2
 
 # required by owncloud
 sed -i "s|[;]*[ ]*always_populate_raw_post_data = .*|always_populate_raw_post_data = -1|" /etc/php/${PHP_VERSION}/fpm/php.ini

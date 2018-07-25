@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-source ${OWNCLOUD_RUNTIME_DIR}/functions
+source ${OWNCLOUD_RUNTIME_ASSETS_DIR}/functions
 
 [[ $DEBUG == true ]] && set -x
 

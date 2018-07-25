@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
-source ${OWNCLOUD_RUNTIME_DIR}/env-defaults
+source ${OWNCLOUD_RUNTIME_ASSETS_DIR}/env-defaults
 
-OWNCLOUD_TEMPLATES_DIR=${OWNCLOUD_RUNTIME_DIR}/config
+OWNCLOUD_TEMPLATES_DIR=${OWNCLOUD_RUNTIME_ASSETS_DIR}/config
 OWNCLOUD_APP_CONFIG=${OWNCLOUD_CONFIG_DIR}/config.php
 OWNCLOUD_NGINX_CONFIG=/etc/nginx/sites-enabled/ownCloud.conf
 

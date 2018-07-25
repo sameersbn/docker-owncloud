@@ -2,6 +2,6 @@
 ## Script to generate backup of a running ownCloud instance from the BASH shell
 
 set -e
-source ${OWNCLOUD_RUNTIME_DIR}/functions
+source ${OWNCLOUD_RUNTIME_ASSETS_DIR}/functions
 
 backup_create $@
