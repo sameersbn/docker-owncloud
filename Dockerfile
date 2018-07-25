@@ -1,3 +1,10 @@
+FROM ubuntu:bionic-20180526 AS add-apt-repositories
+
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y gnupg \
+ && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 14AA40EC0831756756D7F66C4F4EA0AAE5267A6C \
+ && echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu bionic main" >> /etc/apt/sources.list
+
 FROM ubuntu:bionic-20180526
 
 LABEL maintainer="sameer@damagehead.com"
@@ -12,14 +19,13 @@ ENV PHP_VERSION=7.1 \
 ENV OWNCLOUD_BUILD_DIR=${OWNCLOUD_CACHE_DIR}/build \
     OWNCLOUD_RUNTIME_DIR=${OWNCLOUD_CACHE_DIR}/runtime
 
+COPY --from=add-apt-repositories /etc/apt/trusted.gpg /etc/apt/trusted.gpg
+
+COPY --from=add-apt-repositories /etc/apt/sources.list /etc/apt/sources.list
+
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      wget gnupg ca-certificates \
- && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 14AA40EC0831756756D7F66C4F4EA0AAE5267A6C \
- && echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu bionic main" >> /etc/apt/sources.list \
- && apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      nginx mysql-client postgresql-client gettext-base sudo \
+      wget ca-certificates sudo nginx mysql-client postgresql-client gettext-base \
       php${PHP_VERSION}-fpm php${PHP_VERSION}-cli php${PHP_VERSION}-gd \
       php${PHP_VERSION}-pgsql php${PHP_VERSION}-mysql php${PHP_VERSION}-curl \
       php${PHP_VERSION}-zip php${PHP_VERSION}-xml php${PHP_VERSION}-mbstring \
