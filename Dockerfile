@@ -23,21 +23,11 @@ COPY --from=add-apt-repositories /etc/apt/trusted.gpg /etc/apt/trusted.gpg
 
 COPY --from=add-apt-repositories /etc/apt/sources.list /etc/apt/sources.list
 
-RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      wget ca-certificates sudo nginx mysql-client postgresql-client gettext-base \
-      php${PHP_VERSION}-fpm php${PHP_VERSION}-cli php${PHP_VERSION}-gd \
-      php${PHP_VERSION}-pgsql php${PHP_VERSION}-mysql php${PHP_VERSION}-curl \
-      php${PHP_VERSION}-zip php${PHP_VERSION}-xml php${PHP_VERSION}-mbstring \
-      php${PHP_VERSION}-intl php${PHP_VERSION}-mcrypt php${PHP_VERSION}-ldap \
-      php${PHP_VERSION}-gmp php${PHP_VERSION}-apcu php${PHP_VERSION}-imagick \
- && sed -i 's/^listen = .*/listen = 0.0.0.0:9000/' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf \
- && phpenmod -v ALL mcrypt \
- && rm -rf /var/lib/apt/lists/*
-
 COPY assets/build/ ${OWNCLOUD_BUILD_ASSETS_DIR}/
 
-RUN bash ${OWNCLOUD_BUILD_ASSETS_DIR}/install.sh
+RUN chmod +x ${OWNCLOUD_BUILD_ASSETS_DIR}/install.sh
+
+RUN ${OWNCLOUD_BUILD_ASSETS_DIR}/install.sh
 
 COPY assets/runtime/ ${OWNCLOUD_RUNTIME_ASSETS_DIR}/
 

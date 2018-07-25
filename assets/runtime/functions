@@ -36,28 +36,30 @@ parse_yaml() {
    }'
 }
 
-get_php_param() {
-  local key=${1?key not specified}
-  sed -n -e "s/^\(${key}=\)\(.*\)\(.*\)$/\2/p" ${OWNCLOUD_INSTALL_DIR}/.user.ini
+php_config_get() {
+  local config=${1?config file not specified}
+  local key=${2?key not specified}
+  sed -n -e "s/^\(${key}=\)\(.*\)\(.*\)$/\2/p" ${config}
 }
 
-set_php_param() {
-  local key=${1?key not specified}
-  local value=${2?value not specified}
-  local verbosity=${3:-verbose}
+php_config_set() {
+  local config=${1?config file not specified}
+  local key=${2?key not specified}
+  local value=${3?value not specified}
+  local verbosity=${4:-verbose}
 
-  local current=$(get_php_param ${key})
-  if [[ "${current}" != "${value}" ]]; then
-    if [[ ${verbosity} == verbose ]]; then
-      echo "Setting .user.ini parameter: ${key}=${value}"
-    fi
+  if [[ ${verbosity} == verbose ]]; then
+    echo "Setting ${config} parameter: ${key}=${value}"
   fi
 
-  if [[ $(sed -n -e "s/^[;]*[ ]*\(${key}\)=.*/\1/p" .user.ini) == ${key} ]]; then
-    value="$(echo "${value}" | sed 's|[&]|\\&|g')"
-    sed -i "s|^[;]*[ ]*${key}=.*|${key}=${value}|" ${OWNCLOUD_INSTALL_DIR}/.user.ini
-  else
-    echo "${key}=${value}" >> ${OWNCLOUD_INSTALL_DIR}/.user.ini
+  local current=$(php_config_get ${config} ${key})
+  if [[ "${current}" != "${value}" ]]; then
+    if [[ $(sed -n -e "s/^[;]*[ ]*\(${key}\)=.*/\1/p" ${config}) == ${key} ]]; then
+      value="$(echo "${value}" | sed 's|[&]|\\&|g')"
+      sed -i "s|^[;]*[ ]*${key}=.*|${key}=${value}|" ${config}
+    else
+      echo "${key}=${value}" | tee -a ${config} >/dev/null
+    fi
   fi
 }
 
@@ -314,13 +316,13 @@ owncloud_configure_domain() {
 
 owncloud_configure_max_upload_size() {
   echo "Configuring ownCloud::max_upload_size..."
-  set_php_param upload_max_filesize ${OWNCLOUD_UPLOAD_MAX_FILESIZE}
-  set_php_param post_max_size ${OWNCLOUD_UPLOAD_MAX_FILESIZE}
+  php_config_set "${OWNCLOUD_INSTALL_DIR}/.user.ini" "upload_max_filesize" "${OWNCLOUD_UPLOAD_MAX_FILESIZE}"
+  php_config_set "${OWNCLOUD_INSTALL_DIR}/.user.ini" "post_max_size" "${OWNCLOUD_UPLOAD_MAX_FILESIZE}"
 }
 
 owncloud_configure_max_file_uploads() {
   echo "Configuring ownCloud::max_file_uploads..."
-  set_php_param max_file_uploads ${OWNCLOUD_MAX_FILE_UPLOADS}
+  php_config_set "${OWNCLOUD_INSTALL_DIR}/.user.ini" "max_file_uploads" "${OWNCLOUD_MAX_FILE_UPLOADS}"
 }
 
 nginx_configure_virtualhost() {
