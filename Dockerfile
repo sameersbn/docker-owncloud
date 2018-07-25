@@ -1,4 +1,4 @@
-FROM ubuntu:xenial-20180705
+FROM ubuntu:bionic-20180526
 
 LABEL maintainer="sameer@damagehead.com"
 
@@ -13,9 +13,10 @@ ENV OWNCLOUD_BUILD_DIR=${OWNCLOUD_CACHE_DIR}/build \
     OWNCLOUD_RUNTIME_DIR=${OWNCLOUD_CACHE_DIR}/runtime
 
 RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends wget bzip2 ca-certificates \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      wget gnupg ca-certificates \
  && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 14AA40EC0831756756D7F66C4F4EA0AAE5267A6C \
- && echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu xenial main" >> /etc/apt/sources.list \
+ && echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu bionic main" >> /etc/apt/sources.list \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       nginx mysql-client postgresql-client gettext-base sudo \
