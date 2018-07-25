@@ -2,7 +2,7 @@ FROM ubuntu:xenial-20180705
 
 LABEL maintainer="sameer@damagehead.com"
 
-ENV PHP_VERSION=7.0 \
+ENV PHP_VERSION=7.1 \
     OWNCLOUD_VERSION=10.0.8 \
     OWNCLOUD_USER=www-data \
     OWNCLOUD_INSTALL_DIR=/var/www/owncloud \
