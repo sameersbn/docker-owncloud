@@ -1,11 +1,11 @@
-FROM ubuntu:bionic-20180526 AS add-apt-repositories
+FROM ubuntu:bionic-20190612 AS add-apt-repositories
 
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y gnupg \
  && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 14AA40EC0831756756D7F66C4F4EA0AAE5267A6C \
  && echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu bionic main" >> /etc/apt/sources.list
 
-FROM ubuntu:bionic-20180526
+FROM ubuntu:bionic-20190612
 
 LABEL maintainer="sameer@damagehead.com"
 
